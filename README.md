@@ -13,7 +13,7 @@ Use NLP processed text and a Data Science approach and detect whether the paper 
 This project is an open project, and contributions are welcome from any individual.  All contributors to this project are bound by a [code of conduct](CODE_OF_CONDUCT.md).  Please review and follow this code of conduct as part of your contribution.
 
   * [Simon Goring](http://www.goring.org/) [![orcid](https://img.shields.io/badge/orcid-0000--0002--2700--4605-brightgreen.svg)](https://orcid.org/0000-0002-2700-4605)
-  * [Socorro Dominguez Vidana](https://sedv8808.github.io/) [![orcid](https://img.shields.io/badge/orcid-0000--0002--7926--4935--brightgreen.svg)](https://orcid.org/0000-0002-7926-4935)
+  * [Socorro Dominguez Vidana](https://sedv8808.github.io/) [![orcid](https://img.shields.io/badge/orcid-0000--0002--7926--4935-brightgreen.svg)](https://orcid.org/0000-0002-7926-4935)
 
 
 ### Tips for Contributing
@@ -27,6 +27,7 @@ All products of the Throughput Annotation Project are licensed under an [MIT Lic
 Files and directory structure in the repository are as follows:
 This structure might be modified as the project progresses.
 
+```bash
 throughput-ec/UnacquiredSites/
 ├── data
 │   ├── sentences_nlp352                                    # data: parsed sentences' dummy file for reproducibility
@@ -46,7 +47,7 @@ throughput-ec/UnacquiredSites/
     │   └──  preprocessing                                   # preprocessing modules
     └── tests                                                # all tests for the modules
         └── test_data
-
+```
 
 ### Workflow Overview
 
