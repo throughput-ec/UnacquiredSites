@@ -1,12 +1,12 @@
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![NSF-1928366](https://img.shields.io/badge/NSF-1928366-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=1928366)
 
-# Unacquired Sites
+# ML Record Mining
 
-Four-month project to create a pipeline that allows to detect Site Name, Location, Age Span and Site Descriptions from papers in the Neotoma Data Base.
-Use NLP processed text and a Data Science approach and detect whether the paper is suitable for Neotoma Data Base.
+Four-month project to create a pipeline that uses GeoDeepDive's output to find Unaquired Sites for Neotoma.  
 
-  * Please define which data products
+Using NLP parsed text and a Data Science approach, identify whether a paper is suitable for Neotoma and detect features such as 'Site Name', 'Location', 'Age Span' and 'Site Descriptions'.  
+
 
 ## Contributors
 
@@ -18,7 +18,7 @@ This project is an open project, and contributions are welcome from any individu
 
 ### Tips for Contributing
 
-Issues and bug reports are always welcome.  Code clean-up, and feature additions can be done either through pull requests to [project forks]() or branches.
+Issues and bug reports are always welcome.  Code clean-up, and feature additions can be done either through branches.
 
 All products of the Throughput Annotation Project are licensed under an [MIT License](LICENSE) unless otherwise noted.
 
@@ -32,30 +32,30 @@ throughput-ec/UnacquiredSites/
 ├── data
 │   ├── sentences_nlp352                                    # data: parsed sentences' dummy file for reproducibility
 │   └── bibjson                                             # data: bibliography json dummy file for reproducibility
-├── docs                                                    # all docs (md/pdf)
-│   ├── 200615_monthly_report
-│   ├── 200715_monthly_report
-│   ├── 200815_monthly_report
-│   ├── 200915_monthly_report
-│   └── 00_user_manual                       
-└── model_that_locates_sites/location/etc                                    
-    ├── modules                                          # all modules for the package
-    │   ├── arch                                             # model architectures used
-    │   ├── dataloader                                       # dataloader + related files
-    │   ├── output                                           # preprocessing output
-    │   │   └── stat_test_result
-    │   └──  preprocessing                                   # preprocessing modules
-    └── tests                                                # all tests for the modules
-        └── test_data
+├── figures                                                 # all docs (md/pdf)
+│   ├── charts
+│   └── docs                       
+├── src                                    
+│   ├── modules                                             # all modules for the package
+│   │   ├── arch                                            # model architectures used
+│   │   ├── dataloader                                      # dataloader + related files
+│   │   ├── output                                          # preprocessing output
+│   │   │   └── stat_test_result
+│   │   └──  preprocessing                                  # preprocessing modules
+│   └── tests                                               # all tests for the modules
+│       └── test_data
+└── README.md
 ```
 
 ### Workflow Overview
 
-This project uses the Neotoma GeoDeepDive output files; the sentences_nlp352 (sentences file that contains NLP parsed sentences) and the bibjson (JSON file that contains bibliographic information) as input.
+This project uses the GeoDeepDive output files:
+* `sentences_nlp352:` sentences file that contains NLP parsed sentences.
+* `bibjson:` JSON file that contains bibliographic information.
 
-This files should then train a model that will then
-- Using additional features, improve the Site Name, Location, Age Span and Site Descriptions.
-- Predict whether the paper is suitable for the Neotoma Data Base.
+These files are used as input in a ML model that, once trained, should:
+* Predict whether the paper is suitable for Neotoma.
+* Improve the Site Name, Location, Age Span and Site Descriptions.
 
 
 ### System Requirements
@@ -64,13 +64,19 @@ This project is developed using Python.
 It runs on a MacOS system.
 Continuous integration uses TravisCI.
 
+
 ### Data Requirements
 
-The project pulls data from GDD output files.
+The project pulls data from GeoDeepDive output files.
+For the sake of reproducibility, two dummy data files have been included.
+
 
 ### Key Outputs
 
-This project will generate a dataset that provides Site Name, Location, Age Span and Site Descriptions from papers in the Neotoma Data Base.
+This project will generate a dataset that provides the following information:
+* Whether the paper is useful for Neotoma.
+* Site Name, Location, Age Span and Site Descriptions from paper.
+
 
 ## Metrics
 
