@@ -1,48 +1,83 @@
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![NSF-XXXXXXX](https://img.shields.io/badge/NSF-XXXXXXX-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=XXXXXXX) [![NSF-XXXXXXX](https://img.shields.io/badge/NSF-XXXXXXX-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=XXXXXXX)
+[![NSF-1928366](https://img.shields.io/badge/NSF-1928366-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=1928366)
 
-# Project Name
+# ML Record Mining
 
-A short, one paragraph description of the project goes here.
+Four-month project to create a pipeline that uses GeoDeepDive's output to find Unaquired Sites for Neotoma.  
 
-  * Please add all project Award numbers to the Badges above.  This will allow us to crawl and add these repositories to the graph, and also show NSF that we are being good citizens.
-  * Please ensure that all contributors from Throughput have ORCIDs and that these are linked below in the contributors section.
-  * Please consider a clear directory structure early on, and report it below in the "How to use this repository".
-  * Please define which data products
+Using NLP parsed text and a Data Science approach, identify whether a paper is suitable for Neotoma and detect features such as 'Site Name', 'Location', 'Age Span' and 'Site Descriptions'.  
+
 
 ## Contributors
 
 This project is an open project, and contributions are welcome from any individual.  All contributors to this project are bound by a [code of conduct](CODE_OF_CONDUCT.md).  Please review and follow this code of conduct as part of your contribution.
 
-  * [Contributor Name1](http://example.com/contributor_url1) [![orcid](https://img.shields.io/badge/orcid-XXXX--XXXX--XXXX--XXXX-brightgreen.svg)](https://orcid.org/XXXX-XXXX-XXXX-XXXX)
-  * [Contributor Name2](http://example.com/contributor_url2) [![orcid](https://img.shields.io/badge/orcid-XXXX--XXXX--XXXX--XXXX-brightgreen.svg)](https://orcid.org/XXXX-XXXX-XXXX-XXXX)
+  * [Simon Goring](http://www.goring.org/) [![orcid](https://img.shields.io/badge/orcid-0000--0002--2700--4605-brightgreen.svg)](https://orcid.org/0000-0002-2700-4605)
+  * [Socorro Dominguez Vidana](https://sedv8808.github.io/) [![orcid](https://img.shields.io/badge/orcid-0000--0002--7926--4935-brightgreen.svg)](https://orcid.org/0000-0002-7926-4935)
+
 
 ### Tips for Contributing
 
-Issues and bug reports are always welcome.  Code clean-up, and feature additions can be done either through pull requests to [project forks]() or branches.
+Issues and bug reports are always welcome.  Code clean-up, and feature additions can be done either through branches.
 
 All products of the Throughput Annotation Project are licensed under an [MIT License](LICENSE) unless otherwise noted.
 
 ## How to use this repository
 
-A description of the files and directory structure in the repository.
+Files and directory structure in the repository are as follows:
+This structure might be modified as the project progresses.
+
+```bash
+throughput-ec/UnacquiredSites/
+├── data
+│   ├── sentences_nlp352                                    # data: parsed sentences' dummy file for reproducibility
+│   └── bibjson                                             # data: bibliography json dummy file for reproducibility
+├── figures                                                 # all docs (md/pdf)
+│   ├── charts
+│   └── docs                       
+├── src                                    
+│   ├── modules                                             # all modules for the package
+│   │   ├── arch                                            # model architectures used
+│   │   ├── dataloader                                      # dataloader + related files
+│   │   ├── output                                          # preprocessing output
+│   │   │   └── stat_test_result
+│   │   └──  preprocessing                                  # preprocessing modules
+│   └── tests                                               # all tests for the modules
+│       └── test_data
+└── README.md
+```
 
 ### Workflow Overview
 
-Th project uses X core information, manages it and passes our some stuff.
+This project uses the GeoDeepDive output files:
+* `sentences_nlp352:` sentences file that contains NLP parsed sentences.
+* `bibjson:` JSON file that contains bibliographic information.
+
+These files are used as input in a ML model that, once trained, should:
+* Predict whether the paper is suitable for Neotoma.
+* Improve the Site Name, Location, Age Span and Site Descriptions.
+
 
 ### System Requirements
 
-This project is developed using (Python? R?).  It runs on a Windows system (?).  Continuous integration uses TravisCI (?).
+This project is developed using Python.  
+It runs on a MacOS system.
+Continuous integration uses TravisCI.
+
 
 ### Data Requirements
 
-The project pulls data from (?).
+The project pulls data from GeoDeepDive output files.
+For the sake of reproducibility, two dummy data files have been included.
+
 
 ### Key Outputs
 
-This project generates (an API, some log files, what?)
+This project will generate a dataset that provides the following information:
+* Whether the paper is useful for Neotoma.
+* Site Name, Location, Age Span and Site Descriptions from paper.
+
 
 ## Metrics
 
-This project is to be evaluated using the following metrics. . .
+This project is to be evaluated using the following metrics:

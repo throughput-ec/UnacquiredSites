@@ -1,0 +1,383 @@
+[
+    {
+        "publisher": "Elsevier", 
+        "title": "Palaeoclimate, chronology and vegetation history of the Weichselian Lateglacial: comparative analysis of data from three cores at Lago Grande di Monticchio, southern Italy", 
+        "journal": {
+            "name": {
+                "name": "Quaternary Science Reviews"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Huntley, B."
+            }, 
+            {
+                "name": "Watts, W.A."
+            }, 
+            {
+                "name": "Allen, J.R.M."
+            }, 
+            {
+                "name": "Zolitschka, B."
+            }
+        ], 
+        "year": "1999", 
+        "number": "7", 
+        "volume": "18", 
+        "link": [
+            {
+                "url": "http://www.sciencedirect.com/science/article/pii/S0277379199000074", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "550453fde1382326932d85f7", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1016/S0277-3791(99)00007-4"
+            }
+        ], 
+        "type": "article", 
+        "pages": "945--960"
+    }, 
+    {
+        "publisher": "Canadian Science Publishing", 
+        "title": "Holocene history of forest trees on the Bruce Peninsula, southern Ontario", 
+        "journal": {
+            "name": {
+                "name": "Canadian Journal of Botany"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Bennett, K. D."
+            }
+        ], 
+        "year": "1992", 
+        "number": "1", 
+        "volume": "70", 
+        "link": [
+            {
+                "url": "http://www.nrcresearchpress.com/doi/abs/10.1139/b92-002", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "578b5aabcf58f1587003efba", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1139/b92-002"
+            }
+        ], 
+        "type": "article", 
+        "pages": "6--18"
+    }, 
+    {
+        "publisher": "Elsevier", 
+        "title": "Glacial sequence and environmental history in the Sierra Nevada del cocuy (Colombia)", 
+        "journal": {
+            "name": {
+                "name": "Palaeogeography, Palaeoclimatology, Palaeoecology"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Van Der Hammen, T."
+            }, 
+            {
+                "name": "Barelds, J."
+            }, 
+            {
+                "name": "De Jong, H."
+            }, 
+            {
+                "name": "De Veer, A.A."
+            }
+        ], 
+        "year": "1980", 
+        "link": [
+            {
+                "url": "http://www.sciencedirect.com/science/article/pii/0031018280900437", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "54b43244e138239d868493cd", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1016/0031-0182(80)90043-7"
+            }
+        ], 
+        "type": "article", 
+        "pages": "247--340"
+    }, 
+    {
+        "publisher": "GSA", 
+        "title": "A record of sustained prehistoric and historic land use from the Cahokia region, Illinois, USA", 
+        "journal": {
+            "name": {
+                "name": "Geology"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Munoz, S. E."
+            }, 
+            {
+                "name": "Schroeder, S."
+            }, 
+            {
+                "name": "Fike, D. A."
+            }, 
+            {
+                "name": "Williams, J. W."
+            }
+        ], 
+        "year": "2014", 
+        "number": "6", 
+        "volume": "42", 
+        "link": [
+            {
+                "url": "http://dx.doi.org/10.1130/g35541.1", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "57c5b941cf58f1338eaddb5b", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1130/g35541.1"
+            }
+        ], 
+        "type": "article", 
+        "pages": "499--502"
+    }, 
+    {
+        "publisher": "Elsevier", 
+        "title": "Plant and insect fossils at Norwood in south-central Minnesota: A record of late-glacial succession", 
+        "journal": {
+            "name": {
+                "name": "Quaternary Research"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Ashworth, Allan C."
+            }, 
+            {
+                "name": "Schwert, Donald P."
+            }, 
+            {
+                "name": "Watts, William A."
+            }, 
+            {
+                "name": "Wright, H.E."
+            }
+        ], 
+        "year": "1981", 
+        "number": "1", 
+        "volume": "16", 
+        "link": [
+            {
+                "url": "http://www.sciencedirect.com/science/article/pii/0033589481901289", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "54b43269e138239d8684f87f", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1016/0033-5894(81)90128-9"
+            }
+        ], 
+        "type": "article", 
+        "pages": "66--79"
+    }, 
+    {
+        "publisher": "Taylor and Francis", 
+        "title": "10. Na Bahn\u011b (Czech Republic): Vegetation development over the last 2.5 millennia in the Eastern Bohemian lowland", 
+        "journal": {
+            "name": {
+                "name": "Grana"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Pokorn\u00fd, Petr"
+            }, 
+            {
+                "name": "van der Knaap, Willem O."
+            }
+        ], 
+        "year": "2010", 
+        "number": "1", 
+        "volume": "49", 
+        "link": [
+            {
+                "url": "http://www.tandfonline.com/doi/abs/10.1080/00173130903435846", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "58d27c30cf58f121bb4ff5db", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1080/00173130903435846"
+            }
+        ], 
+        "type": "article", 
+        "pages": "79--81"
+    }, 
+    {
+        "publisher": "Canadian Science Publishing", 
+        "title": "Age verification of the Lake Gribben forest bed and the Younger Dryas Advance of the Laurentide Ice Sheet", 
+        "journal": {
+            "name": {
+                "name": "Canadian Journal of Earth Sciences"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Lowell, Thomas V"
+            }, 
+            {
+                "name": "Larson, Graham J"
+            }, 
+            {
+                "name": "Hughes, John D"
+            }, 
+            {
+                "name": "Denton, George H"
+            }
+        ], 
+        "year": "1999", 
+        "number": "3", 
+        "volume": "36", 
+        "link": [
+            {
+                "url": "http://www.nrcresearchpress.com/doi/abs/10.1139/e98-095", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "574629c5cf58f15d3f588144", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1139/e98-095"
+            }
+        ], 
+        "type": "article", 
+        "pages": "383--393"
+    }, 
+    {
+        "publisher": "Elsevier", 
+        "title": "Holocene vegetation history and fire regimes of Pseudotsuga menziesii forests in the Gulf Islands National Park Reserve, southwestern British Columbia, Canada", 
+        "journal": {
+            "name": {
+                "name": "Quaternary Research"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Lucas, Jennifer D."
+            }, 
+            {
+                "name": "Lacourse, Terri"
+            }
+        ], 
+        "year": "2013", 
+        "number": "3", 
+        "volume": "79", 
+        "link": [
+            {
+                "url": "http://www.sciencedirect.com/science/article/pii/S0033589413000239", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "54b43265e138239d8684ee17", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1016/j.yqres.2013.03.001"
+            }
+        ], 
+        "type": "article", 
+        "pages": "366--376"
+    }, 
+    {
+        "publisher": "Elsevier", 
+        "title": "Synchronization of late-glacial vegetation changes at Crystal Lake, Illinois, USA with the North Atlantic Event Stratigraphy", 
+        "journal": {
+            "name": {
+                "name": "Quaternary Research"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Gonzales, Leila M."
+            }, 
+            {
+                "name": "Grimm, Eric C."
+            }
+        ], 
+        "year": "2009", 
+        "number": "2", 
+        "volume": "72", 
+        "link": [
+            {
+                "url": "http://www.sciencedirect.com/science/article/pii/S0033589409000532", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "54b43265e138239d8684ef96", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1016/j.yqres.2009.05.001"
+            }
+        ], 
+        "type": "article", 
+        "pages": "234--245"
+    }, 
+    {
+        "publisher": "Wiley", 
+        "title": "Contrasting pollen histories of MIS 5e and the Holocene from Lake Titicaca (Bolivia/Peru)", 
+        "journal": {
+            "name": {
+                "name": "Journal of Quaternary Science"
+            }
+        }, 
+        "author": [
+            {
+                "name": "Hanselman, Jennifer A."
+            }, 
+            {
+                "name": "Gosling, William D."
+            }, 
+            {
+                "name": "Paduano, Gina M."
+            }, 
+            {
+                "name": "Bush, Mark B."
+            }
+        ], 
+        "year": "2005", 
+        "number": "7-8", 
+        "volume": "20", 
+        "link": [
+            {
+                "url": "http://doi.wiley.com/10.1002/jqs.979", 
+                "type": "publisher"
+            }
+        ], 
+        "_gddid": "56f8f62ccf58f1710ac939e0", 
+        "identifier": [
+            {
+                "type": "doi", 
+                "id": "10.1002/jqs.979"
+            }
+        ], 
+        "type": "article", 
+        "pages": "663--670"
+    }
+]
