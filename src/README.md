@@ -10,9 +10,12 @@ If the latter is used, the data will be loaded using the `config` and `database.
 
 To do your own `database.ini` file, just copy and paste the text bellow and change the credentials accordingly.
 
-[postgresql]
-user = user
-password = pwd
-host = localhost
-port = 5432
+[postgresql]  
+user = user  
+password = pwd  
+host = localhost  
+port = 5432  
 database = database
+
+
+On the config.py file, you should also edit the route you are loading `database.ini` from.
