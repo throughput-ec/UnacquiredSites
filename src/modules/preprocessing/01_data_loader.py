@@ -6,7 +6,7 @@ import re
 import ast
 
 # Load Postgres Server
-from config import config
+from ..modules.src.config import config
 
 # Connect to PostgreSQL server from terminal:
 # pg_ctl -D PSQL_Data -l logfile start
