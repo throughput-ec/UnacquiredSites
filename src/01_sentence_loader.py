@@ -44,6 +44,18 @@ except:
     nlp_sentences['dep_parents']= nlp_sentences['dep_parents'].str.split(",")
     print('Data obtained from text file')
 
+
+# Assigning the REGEX for dd and dms coordinates
+
+dms_regex = r"([-]?\d{1,3}[°|′|\'|,]{0,3}\d{1,2}[,|′|\']{1,3}\d{0,2}[,|′|\']{1,4}[NESWnesw]?[\s|,|\']+?[-]?\d{1,3}[°|,|′|\']+\d{1,2}[,|′|\']+\d{0,2}[,|′|\'][,|′|\']{0,4}[NESWnesw]?)"
+dd_regex =  r"([-]?\d{1,3}\.\d{1,}[,]?[NESWnesw][\s|,|\']+?[-]?\d{1,3}\.\d{1,}[,]?[NESWnesw])"
+
+# Add columns to dataframe for the dms and dd REGEX
+nlp_sentences['words_as_string'] = nlp_sentences['words'].apply(lambda x: ','.join(map(str, x)))
+nlp_sentences['dms_regex'] = nlp_sentences['words_as_string'].str.findall(dms_regex)
+nlp_sentences['dd_regex'] = nlp_sentences['words_as_string'].str.findall(dd_regex)
+
+
 path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output'
 output_file = os.path.join(path,'nlp_sentences_df.csv')
-nlp_sentences.to_csv(output_file, index = False)
+nlp_sentences.to_csv(output_file, sep='\t', index = False)
