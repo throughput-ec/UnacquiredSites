@@ -41,6 +41,9 @@ rsconnect/
 
 # Database credentials
 */database.ini
+src/modules/preprocessing/config.py
+src/modules/preprocessing/database.ini
+
 
 # Others
 __pycache__/
@@ -51,4 +54,12 @@ src/modules/preprocessing/__pycache__/add_regex_degrees.cpython-37.pyc
 src/modules/preprocessing/__pycache__/bibliography_loader.cpython-37.pyc
 src/modules/preprocessing/__pycache__/neotoma_loader.cpython-37.pyc
 src/modules/preprocessing/__pycache__/nlp_sentence_loader.cpython-37.pyc
+src/modules/preprocessing/__pycache__/config.cpython-37.pyc
 src/modules/preprocessing/__pycache__/preprocess_all_data.cpython-37.pyc
+src/output/.ipynb_checkpoints/
+
+# Heavy df
+src/output/bibliography.csv
+src/output/nlp_sentences_df.csv
+src/output/sentences_with_latlong_intersections.tsv
+src/output/sentences_with_sitenames_intersections.tsv
