@@ -4,7 +4,7 @@ import ast
 from nltk.tokenize import word_tokenize
 
 
-def neotoma_loader(file = "/Users/seiryu8808/Desktop/UnacquiredSites2/data/Do_not_commit_data/data-1590729612420.csv"):
+def neotoma_loader(file = "/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/data-1590729612420.csv"):
     neotoma = pd.read_csv(file)
     neotoma = neotoma[['siteid', 'sitename', 'longitudeeast', 'latitudenorth', 'longitudewest', 'latitudesouth', 'sitedescription', 'doi']]
     return neotoma
