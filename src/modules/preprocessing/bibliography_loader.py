@@ -4,7 +4,7 @@ import re
 import os
 import json
 
-def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UnacquiredSites2/data/Do_not_commit_data/bibjson'):
+def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/bibjson'):
     with open(path, 'r') as f:
         bib_dict = json.load(f)
     # Normalizing data so that we have access to the 'identifier'
