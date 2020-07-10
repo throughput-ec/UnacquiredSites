@@ -59,7 +59,7 @@ def preprocessed_sentences_sql(query = '''SELECT * FROM sentences;'''):
 # If no SQL db, load from a file
 def preprocessed_sentences_csv(path = "../Do_not_commit_data/sentences_nlp352"):
     """
-    Loads and formats NLP sentences SQL file and converts to a dataframe
+    Loads and formats NLP sentences CSV file and converts to a dataframe
 
     Parameters
     ----------
