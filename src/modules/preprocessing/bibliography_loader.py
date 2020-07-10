@@ -5,6 +5,19 @@ import os
 import json
 
 def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/bibjson'):
+    """
+    Finds all REGEX expressions within a column
+
+    Parameters
+    ----------
+    path : string
+        Path where the bibliography database is stored.
+
+    Returns
+    -------
+    bibliography: pd.DataFrame
+        pd.DataFrame with all bibliography information
+    """
     with open(path, 'r') as f:
         bib_dict = json.load(f)
     # Normalizing data so that we have access to the 'identifier'
