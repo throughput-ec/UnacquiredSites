@@ -6,7 +6,7 @@ import json
 
 def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/bibjson'):
     """
-    Finds all REGEX expressions within a column
+    Loads and formats bibliography json file and converts to a dataframe
 
     Parameters
     ----------
