@@ -1,3 +1,4 @@
+import pytest
 from src.modules.preprocessing.add_regex_degrees import *
 import pandas as pd
 
