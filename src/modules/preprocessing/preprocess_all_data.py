@@ -1,6 +1,5 @@
 import src.modules.preprocessing.nlp_sentence_loader as sentence_loader
 import src.modules.preprocessing.bibliography_loader as bib_loader
-import src.modules.preprocessing.add_regex_degrees as ard
 import src.modules.preprocessing.neotoma_loader as nl
 
 
@@ -29,6 +28,7 @@ def get_all_datasets():
 
     return nlp_sentences, bibliography, neotoma, neotoma_joined_df
 
+
 def get_nlp_bib_neotoma(nlp_sentences, bibliography, neotoma_joined_df):
     """
     Uses all main datasets to create NLP_BIB_NEOTOMA dataframe
@@ -45,10 +45,12 @@ def get_nlp_bib_neotoma(nlp_sentences, bibliography, neotoma_joined_df):
     Returns
     -------
     nlp_bib : pd.DataFrame
-        pd.DataFrame with summarized merged nlp sentences and bibliography information
+        pd.DataFrame with summarized merged nlp sentences and
+        bibliography information
     nlp_bib_neotoma : pd.DataFrame
-        pd.DataFrame with summarized NLP, Bibliography and Neotoma database information
+        pd.DataFrame with summarized NLP, Bibliography and Neotoma
+        database information
     """
-    nlp_bib = nlp_sentences.merge(bibliography, on = '_gddid')
-    nlp_bib_neotoma = nlp_bib.merge(neotoma_joined_df, on = 'doi', how = 'left')
+    nlp_bib = nlp_sentences.merge(bibliography, on='_gddid')
+    nlp_bib_neotoma = nlp_bib.merge(neotoma_joined_df, on='doi', how='left')
     return nlp_bib, nlp_bib_neotoma
