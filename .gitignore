@@ -28,6 +28,9 @@ vignettes/*.pdf
 /*_cache/
 /cache/
 
+/*pyc/
+*.pyc
+
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
@@ -59,6 +62,8 @@ src/modules/preprocessing/__pycache__/preprocess_all_data.cpython-37.pyc
 src/output/.ipynb_checkpoints/
 .ipynb_checkpoints/
 src/modules/preprocessing/__pycache__/config.cpython-37.pyc
+src/modules/preprocessing/__pycache__/config.cpython-37.pyc
+*cpython-37.pyc
 
 
 
