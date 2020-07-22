@@ -13,10 +13,17 @@ from nltk.corpus import stopwords
 import time
 import pickle
 
+import argparse
+import sys
 import os
+
+
 path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output'
 data_file = r'completed_preprocessing.tsv'
 file = path + '/' + data_file
+
+def main():
+    return null
 
 
 def prepare_data(file = file):
@@ -77,3 +84,6 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         print(f"Model's validation accuracy: {result:.5f}")
         predictions = model.predict(X_test)
         return predictions
+
+if __name__ == '__main__':
+    main()

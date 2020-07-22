@@ -4,6 +4,11 @@ import re
 import os
 import json
 
+import argparse
+import sys
+
+
+
 def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/bibjson'):
     """
     Loads and formats bibliography json file and converts to a dataframe
@@ -46,6 +51,7 @@ def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UWinsc/Github/Do
     bibliography = bibliography[['_type', '_id', 'publisher', 'title', 'journal.name.name',	'author', 'year', 'number', 'volumne', '_gddid', 'type', 'pages', 'link_url', 'link_type']]
 
     bibliography = bibliography.rename(columns={'_id': 'doi'})
+
     return bibliography
 
 
