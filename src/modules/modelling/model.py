@@ -50,17 +50,18 @@ def main():
     if args.trained_model == 'yes':
         print("Loading previous model")
 
-        y_pred = predict(X_test, y_test, X_train, y_train, trained_model = 'yes')
+        y_pred, y_proba = predict(X_test, y_test, X_train, y_train, trained_model = 'yes')
         print("Completed predictions")
 
     if args.trained_model == 'no':
         print("Training again...")
-        y_pred = predict(X_test, y_test, X_train, y_train, trained_model = 'no')
+        y_pred, y_proba = predict(X_test, y_test, X_train, y_train, trained_model = 'no')
         print("Getting predictions...")
         print("Completed predictions!")
 
     guessed_label = pd.DataFrame(y_pred)
     actual_label = pd.DataFrame(y_test)
+    predicted_proba = pd.DataFrame(y_proba)
     actual_label = actual_label.reset_index()
 
     original_sentence = pd.DataFrame(data_test[['_gddid','sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
@@ -68,15 +69,22 @@ def main():
 
     test_pred_comp = guessed_label.join(actual_label)
     test_pred_comp = test_pred_comp.drop(columns=['index'])
+    test_pred_comp.columns = ['predicted_label'] + test_pred_comp.columns.tolist()[1:]
+
+    test_pred_comp = predicted_proba.join(test_pred_comp)
+    test_pred_comp.columns = ['prediction_proba'] + test_pred_comp.columns.tolist()[1:]
+    #test_pred_comp = test_pred_comp.drop(columns=['index'])
 
     test_pred_comp = test_pred_comp.join(original_sentence)
     test_pred_comp = test_pred_comp.drop(columns=['index'])
-    test_pred_comp = test_pred_comp.rename(columns={'':'predicted_label', 'has_both_lat_long_int':'original_label', 'words_as_string':'sentence'})
-    test_pred_comp.columns = ['predicted_label'] + test_pred_comp.columns.tolist()[1:]
+    test_pred_comp = test_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label', 'words_as_string':'sentence'})
+    #test_pred_comp.columns = ['predicted_proba'] + test_pred_comp.columns.tolist()[1:]
 
     output_file = os.path.join(args.input_path,'comparison_file.tsv')
     test_pred_comp.to_csv(output_file, sep='\t', index = False)
     print(f"Saving validation - prediction comparison dataframe in: {output_file}")
+
+    #print(test_pred_comp['predicted_proba'])
 
 
 def prepare_data(path = path, file = file_name):
@@ -131,7 +139,8 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         result = loaded_model.score(X_test, y_test)
         print(f"Model's validation accuracy: {result:.5f}")
         y_pred = loaded_model.predict(X_test)
-        return y_pred
+        y_proba = loaded_model.predict_proba(X_test)[:,1]
+        return y_pred, y_proba
 
     if trained_model == 'no':
         print("Retraining the model")
@@ -142,7 +151,8 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         result = model.score(X_test, y_test)
         print(f"Model's validation accuracy: {result:.5f}")
         y_pred = model.predict(X_test)
-        return y_pred
+        y_proba = model.predict_proba(X_test)[:,1]
+        return y_pred, y_proba
 
 if __name__ == '__main__':
     main()
