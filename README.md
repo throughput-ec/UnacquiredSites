@@ -79,6 +79,10 @@ This project will generate a dataset that provides the following information:
 * Whether the paper is useful for Neotoma.
 * Site Name, Location, Age Span and Site Descriptions from paper.
 
+##  Profiling
+Profiling logs can be found on 
+src/output/profiling
+
 
 ## Instructions
 Review src README file to run the python package for inference.

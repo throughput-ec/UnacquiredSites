@@ -17,6 +17,8 @@ import argparse
 import sys
 import os
 
+import cProfile, pstats, io
+
 ## USAGE
 ## python3 /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/modules/modelling/model.py \
 ## --input_path = '/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model' \
@@ -85,8 +87,7 @@ def main():
     print(f"Saving validation - prediction comparison dataframe in: {output_file}")
 
     #print(test_pred_comp['predicted_proba'])
-
-
+    
 def prepare_data(path = path, file = file_name):
     input_file = os.path.join(path, file_name)
     df = pd.read_csv(input_file, sep='\t')
@@ -153,6 +154,19 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         y_pred = model.predict(X_test)
         y_proba = model.predict_proba(X_test)[:,1]
         return y_pred, y_proba
+        
+pr = cProfile.Profile()
+pr.enable()
 
+my_result = main()
+
+pr.disable()
+s = io.StringIO()
+ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+ps.print_stats()
+
+with open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/profiling/profiling_model.txt', 'w+') as f:
+    f.write(s.getvalue())
+    
 if __name__ == '__main__':
     main()

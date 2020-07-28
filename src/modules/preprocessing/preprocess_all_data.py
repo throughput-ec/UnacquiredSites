@@ -13,6 +13,8 @@ import argparse
 import sys
 import os
 
+import cProfile, pstats, io
+
 ## USAGE
 ## python3 /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/modules/preprocessing/preprocess_all_data.py \
 ## --output_path='/Users/seiryu8808/Desktop' --output_name='preprocessed_sentences.tsv'
@@ -102,6 +104,18 @@ def get_nlp_bib_neotoma(nlp_sentences, bibliography, neotoma_joined_df):
     nlp_bib_neotoma = nlp_bib.merge(neotoma_joined_df, on = 'doi')
     return nlp_bib, nlp_bib_neotoma
 
+pr = cProfile.Profile()
+pr.enable()
+
+my_result = main()
+
+pr.disable()
+s = io.StringIO()
+ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+ps.print_stats()
+
+with open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/profiling/profiling_preprocess_data.txt', 'w+') as f:
+    f.write(s.getvalue())
 
 if __name__ == '__main__':
     main()
