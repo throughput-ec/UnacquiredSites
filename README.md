@@ -35,13 +35,16 @@ throughput-ec/UnacquiredSites/
 ├── figures                                                 # all docs (md/pdf)
 │   ├── charts
 │   └── docs                       
-├── src                                    
+├── src    
+│   ├── README.md     
+│   ├── database_sample.ini                                 # dummy file to show the format for your ini file
+│   ├── config_sample.py                                    # dummy file to show the format for your config file
 │   ├── modules                                             # all modules for the package
-│   │   ├── arch                                            # model architectures used
-│   │   ├── dataloader                                      # dataloader + related files
-│   │   ├── output                                          # preprocessing output
+│   │   ├── dashboard                                       # module for dashboard
+│   │   ├── eda_creator                                     # eda_creator for Jupyter Notebook files
+│   │   ├── modelling                                       # training script
 │   │   │   └── stat_test_result
-│   │   └──  preprocessing                                  # preprocessing modules
+│   │   └──  preprocessing                                  # preprocessing of the data modules
 │   └── tests                                               # all tests for the modules
 │       └── test_data
 └── README.md
@@ -64,7 +67,6 @@ This project is developed using Python.
 It runs on a MacOS system.
 Continuous integration uses TravisCI.
 
-
 ### Data Requirements
 
 The project pulls data from GeoDeepDive output files.
@@ -77,7 +79,10 @@ This project will generate a dataset that provides the following information:
 * Whether the paper is useful for Neotoma.
 * Site Name, Location, Age Span and Site Descriptions from paper.
 
+##  Profiling
+Profiling logs can be found on 
+src/output/profiling
 
-## Metrics
 
-This project is to be evaluated using the following metrics:
+## Instructions
+Review src README file to run the python package for inference.

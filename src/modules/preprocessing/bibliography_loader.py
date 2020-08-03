@@ -4,7 +4,25 @@ import re
 import os
 import json
 
-def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UnacquiredSites2/data/Do_not_commit_data/bibjson'):
+import argparse
+import sys
+
+
+
+def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/bibjson'):
+    """
+    Loads and formats bibliography json file and converts to a dataframe
+
+    Parameters
+    ----------
+    path : string
+        Path where the bibliography database is stored.
+
+    Returns
+    -------
+    bibliography: pd.DataFrame
+        pd.DataFrame with all bibliography information
+    """
     with open(path, 'r') as f:
         bib_dict = json.load(f)
     # Normalizing data so that we have access to the 'identifier'
@@ -33,6 +51,7 @@ def preprocessed_bibliography(path = '/Users/seiryu8808/Desktop/UnacquiredSites2
     bibliography = bibliography[['_type', '_id', 'publisher', 'title', 'journal.name.name',	'author', 'year', 'number', 'volumne', '_gddid', 'type', 'pages', 'link_url', 'link_type']]
 
     bibliography = bibliography.rename(columns={'_id': 'doi'})
+
     return bibliography
 
 
