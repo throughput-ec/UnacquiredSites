@@ -8,8 +8,9 @@
 #!/usr/bin/python
 from configparser import ConfigParser
 
+
 # Change filename route accordingly
-def config(filename='/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/modules/preprocessing/database.ini', section='postgresql'):
+def config(filename, section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
