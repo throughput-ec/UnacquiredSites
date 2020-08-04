@@ -7,8 +7,8 @@ import utils as ard
 import config as config
 
 # For Jupyter notebook change imports to
-# import src.modules.preprocessing.config as config
-# import src.modules.preprocessing.add_regex_degrees as ard
+#import src.modules.preprocessing.config as config
+#import src.modules.preprocessing.utils as ard
 
 
 # Connect to PostgreSQL server from terminal:
@@ -57,6 +57,15 @@ def preprocessed_sentences_sql(query='''SELECT * FROM sentences;'''):
             .replace(' -RRB-', r')', regex=True)\
             .replace('RRB', r')', regex=True)\
             .replace('-RRB', r')', regex=True)
+
+        # REGEX Values
+
+        nlp_sentences = ard.find_re(nlp_sentences, find_val = 'dms_regex',\
+         search_col = 'words_as_string', new_col_name = 'dms_regex')
+        nlp_sentences = ard.find_re(nlp_sentences, find_val = 'dd_regex',\
+         search_col = 'words_as_string', new_col_name = 'dd_regex')
+        nlp_sentences = ard.find_re(nlp_sentences, find_val = 'digits_regex',\
+         search_col = 'words_as_string', new_col_name = 'digits_regex')
 
         # Format words to lowercase
         nlp_sentences['words_l'] = nlp_sentences['words']\
