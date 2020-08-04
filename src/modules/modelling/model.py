@@ -20,13 +20,13 @@ import os
 import cProfile, pstats, io
 
 ## USAGE
-## python3 /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/modules/modelling/model.py \
-## --input_file = '/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model/preprocessed_sentences.tsv' \
+## python3 src/modules/modelling/model.py \
+## --input_file = 'src/output/for_model/preprocessed_sentences.tsv' \
 ## --trained_model='yes'
 
-in_file_name = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model/preprocessed_sentences.tsv'
+in_file_name = r'src/output/for_model/preprocessed_sentences.tsv'
 
-out_file_name = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/predictions/comparison_file.tsv'
+out_file_name = r'src/output/predictions/comparison_file.tsv'
 
 
 def main():
@@ -128,14 +128,14 @@ def prepare_data(file = in_file_name):
 def train(X_train, y_train):
     clf = DecisionTreeClassifier(min_samples_split = 40, max_depth = 12)
     clf.fit(X_train, y_train)
-    filename = '/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/finalized_model.sav'
+    filename = 'src/output/finalized_model.sav'
     pickle.dump(clf, open(filename, 'wb'))
     return clf
 
 
 def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
     if trained_model == 'yes':
-        loaded_model = pickle.load(open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/finalized_model.sav', 'rb'))
+        loaded_model = pickle.load(open('src/output/finalized_model.sav', 'rb'))
         training_acc = loaded_model.score(X_train, y_train)
         print(f"This model's training accuracy was of: {training_acc:.5f}")
         result = loaded_model.score(X_test, y_test)
@@ -167,7 +167,7 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
 #ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
 #ps.print_stats()
 
-#with open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/profiling/profiling_model.txt', 'w+') as f:
+#with open('src/output/profiling/profiling_model.txt', 'w+') as f:
 #    f.write(s.getvalue())
 
 if __name__ == '__main__':

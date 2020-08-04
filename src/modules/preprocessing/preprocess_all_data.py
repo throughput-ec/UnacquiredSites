@@ -17,16 +17,16 @@ import pstats
 import io
 
 # USAGE
-# python3 /your_path/src/preprocess_all_data.py \
-# --output_name='preprocessed_sentences.tsv' \
-# --bib_file='/file_path/bibjson' \
-# --neotoma_file='/file_path/data-1590729612420.csv' \
+# python3 src/preprocess_all_data.py \
+# --output_name='src/output/for_model/preprocessed_sentences.tsv' \
+# --bib_file='data/bibjson' \
+# --neotoma_file='data/data-1590729612420.csv' \
 # --create_eda='yes'
 
-path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model'
-file = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model/preprocessed_sentences.tsv'
-bib_file = r'/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/bibjson'
-neotoma_file = r'/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/data-1590729612420.csv'
+path = r'src/output/for_model'
+file = r'src/output/for_model/preprocessed_sentences.tsv'
+bib_file = r'data/bibjson'
+neotoma_file = r'data/data-1590729612420.csv'
 
 
 def main():
@@ -158,7 +158,7 @@ def get_nlp_bib_neotoma(nlp_sentences, bibliography, neotoma_joined_df):
 #ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
 #ps.print_stats()
 
-#with open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/profiling/profiling_preprocess_data.txt', 'w+') as f:
+#with open('src/output/profiling/profiling_preprocess_data.txt', 'w+') as f:
 #    f.write(s.getvalue())
 
 if __name__ == '__main__':
