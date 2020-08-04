@@ -21,21 +21,22 @@ import cProfile, pstats, io
 
 ## USAGE
 ## python3 /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/modules/modelling/model.py \
-## --input_path = '/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model' \
-## --input_file = 'preprocessed_sentences.tsv' \
+## --input_file = '/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model/preprocessed_sentences.tsv' \
 ## --trained_model='yes'
 
-path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model'
-file_name = r'preprocessed_sentences.tsv'
-input_file = os.path.join(path, file_name)
+in_file_name = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model/preprocessed_sentences.tsv'
+
+out_file_name = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/predictions/comparison_file.tsv'
+
 
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--input_path', type=str, default=path,
+    parser.add_argument('--input_file', type=str, default=in_file_name,
                         help='Directory where your input data is.')
-    parser.add_argument('--input_file', type=str, default=file_name,
-                        help='Name of the file as tsv.')
+
+    parser.add_argument('--output_file', type=str, default=out_file_name,
+                        help='Directory where your input data is.')
 
     parser.add_argument('--trained_model', type=str, default='yes',
                         help='Use train model or no. Options: yes/no')
@@ -43,7 +44,7 @@ def main():
     args = parser.parse_args()
 
 
-    X_train, y_train, X_test, y_test, data_test = prepare_data(path = args.input_path, file = args.input_file)
+    X_train, y_train, X_test, y_test, data_test = prepare_data(file = args.input_file)
     print("Using CountVectorizer to normalize data...")
 
     # Start predictions
@@ -82,14 +83,14 @@ def main():
     test_pred_comp = test_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label', 'words_as_string':'sentence'})
     #test_pred_comp.columns = ['predicted_proba'] + test_pred_comp.columns.tolist()[1:]
 
-    output_file = os.path.join(args.input_path,'comparison_file.tsv')
+    output_file = os.path.join(args.output_file)
     test_pred_comp.to_csv(output_file, sep='\t', index = False)
     print(f"Saving validation - prediction comparison dataframe in: {output_file}")
 
     #print(test_pred_comp['predicted_proba'])
-    
-def prepare_data(path = path, file = file_name):
-    input_file = os.path.join(path, file_name)
+
+def prepare_data(file = in_file_name):
+    input_file = file
     df = pd.read_csv(input_file, sep='\t')
 
     df['has_both_lat_long_int'] = ((df['found_lat'].apply(len) > 2) & (df['found_long'].apply(len) > 2 ))
@@ -154,19 +155,20 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         y_pred = model.predict(X_test)
         y_proba = model.predict_proba(X_test)[:,1]
         return y_pred, y_proba
-        
-pr = cProfile.Profile()
-pr.enable()
 
-my_result = main()
+# Uncomment for profiling
+#pr = cProfile.Profile()
+#pr.enable()
 
-pr.disable()
-s = io.StringIO()
-ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
-ps.print_stats()
+#my_result = main()
 
-with open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/profiling/profiling_model.txt', 'w+') as f:
-    f.write(s.getvalue())
-    
+#pr.disable()
+#s = io.StringIO()
+#ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+#ps.print_stats()
+
+#with open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/profiling/profiling_model.txt', 'w+') as f:
+#    f.write(s.getvalue())
+
 if __name__ == '__main__':
     main()

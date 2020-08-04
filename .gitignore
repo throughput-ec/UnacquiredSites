@@ -1,6 +1,10 @@
 
 .env
 
+#data
+bibjson
+data-1590729612420.csv
+
 # pychache
 __pycache__/
 src/__pycache__/
