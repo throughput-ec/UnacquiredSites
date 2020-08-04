@@ -1,13 +1,16 @@
-# This file was adapted from http://www.postgresqltutorial.com/postgresql-python/connect/
+# This file was adapted from
+#   http://www.postgresqltutorial.com/postgresql-python/connect/
 
-# The following config() function reads in the database.ini file and returns the connection
-# parameters as a dictionary. This function will be imported in to the main python script:
+# The following config() function reads in the database.ini file and
+# returns the connection parameters as a dictionary. This function will be
+# imported in to the main python script:
 
 #!/usr/bin/python
 from configparser import ConfigParser
 
+
 # Change filename route accordingly
-def config(filename='/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/modules/preprocessing/database.ini', section='postgresql'):
+def config(filename, section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -22,8 +25,10 @@ def config(filename='/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src
         for param in params:
             db[param[0]] = param[1]
 
-    # Returns an error if a parameter is called that is not listed in the initialization file
+    # Returns an error if a parameter is called that is not listed in
+    #  the initialization file
     else:
-        raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+        raise Exception('Section {0} not found in the {1} file'
+                        .format(section, filename))
 
     return db
