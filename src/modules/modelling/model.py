@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import random
 
 # Loading libraries for modeling
 from sklearn.tree import DecisionTreeClassifier
@@ -97,6 +98,14 @@ def prepare_data(file = in_file_name):
 
     # Map True to One and False to Zero
     df['has_both_lat_long_int'] = df['has_both_lat_long_int'].astype(int)
+
+    # Balancing data
+    random.seed(30)
+    df0 = df[df['has_both_lat_long_int'] == 0]
+    df0 = df0.sample(n = 600, random_state=1)
+    df1 = df[df['has_both_lat_long_int'] == 1]
+    df = pd.concat([df0, df1])
+
 
     # Reduce data to columns of interest for this task.
     # df = df[['words_as_string', 'has_both_lat_long_int']]
