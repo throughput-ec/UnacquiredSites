@@ -29,6 +29,9 @@ in_file_name = r'src/output/for_model/preprocessed_sentences.tsv'
 
 out_file_name = r'src/output/predictions/comparison_file.tsv'
 
+out_dashboard_file_name = r'src/output/predictions/dashboard_file.tsv'
+
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -45,7 +48,7 @@ def main():
     args = parser.parse_args()
 
 
-    X_train, y_train, X_test, y_test, data_test = prepare_data(file = args.input_file)
+    X_train, y_train, X_test, y_test, data_test, data_train = prepare_data(file = args.input_file)
     print("Using CountVectorizer to normalize data...")
 
     # Start predictions
@@ -57,11 +60,15 @@ def main():
         y_pred, y_proba = predict(X_test, y_test, X_train, y_train, trained_model = 'yes')
         print("Completed predictions")
 
+        y_train_pred, y_train_proba=predict_proba_train(X_train, y_train, trained_model = 'yes')
+
     if args.trained_model == 'no':
         print("Training again...")
         y_pred, y_proba = predict(X_test, y_test, X_train, y_train, trained_model = 'no')
         print("Getting predictions...")
         print("Completed predictions!")
+
+        y_train_pred, y_train_proba=predict_proba_train(X_train, y_train, trained_model = 'no')
 
     guessed_label = pd.DataFrame(y_pred)
     actual_label = pd.DataFrame(y_test)
@@ -83,12 +90,36 @@ def main():
     test_pred_comp = test_pred_comp.drop(columns=['index'])
     test_pred_comp = test_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label', 'words_as_string':'sentence'})
     #test_pred_comp.columns = ['predicted_proba'] + test_pred_comp.columns.tolist()[1:]
-
+    test_pred_comp['train/test'] = 'Test'
     output_file = os.path.join(args.output_file)
     test_pred_comp.to_csv(output_file, sep='\t', index = False)
     print(f"Saving validation - prediction comparison dataframe in: {output_file}")
 
-    #print(test_pred_comp['predicted_proba'])
+    # Getting DF for Dashboard
+    guessed_train_label = pd.DataFrame(y_train_pred)
+    actual_train_label = pd.DataFrame(y_train)
+    predicted_train_proba = pd.DataFrame(y_train_proba)
+    actual_train_label = actual_train_label.reset_index()
+
+    original_train_sentence = pd.DataFrame(data_train[['_gddid','sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
+    original_train_sentence = original_train_sentence.reset_index()
+
+    train_pred_comp = guessed_train_label.join(actual_train_label)
+    train_pred_comp = train_pred_comp.drop(columns=['index'])
+    train_pred_comp.columns = ['predicted_label'] + train_pred_comp.columns.tolist()[1:]
+
+    train_pred_comp = predicted_train_proba.join(train_pred_comp)
+    train_pred_comp.columns = ['prediction_proba'] + train_pred_comp.columns.tolist()[1:]
+    #test_pred_comp = test_pred_comp.drop(columns=['index'])
+
+    train_pred_comp = train_pred_comp.join(original_train_sentence)
+    train_pred_comp = train_pred_comp.drop(columns=['index'])
+    train_pred_comp = train_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label', 'words_as_string':'sentence'})
+    #test_pred_comp.columns = ['predicted_proba'] + test_pred_comp.columns.tolist()[1:]
+    train_pred_comp['train/test'] = 'Train'
+    output_file2 = os.path.join(out_dashboard_file_name)
+    train_pred_comp.to_csv(output_file2, sep='\t', index = False)
+    print(f"Saving train labels - comparison dataframe for dashboard in: {output_file2}")
 
 def prepare_data(file = in_file_name):
     input_file = file
@@ -99,19 +130,12 @@ def prepare_data(file = in_file_name):
     # Map True to One and False to Zero
     df['has_both_lat_long_int'] = df['has_both_lat_long_int'].astype(int)
 
-    # Balancing data
-    random.seed(30)
-    df0 = df[df['has_both_lat_long_int'] == 0]
-    df0 = df0.sample(n = 600, random_state=1)
-    df1 = df[df['has_both_lat_long_int'] == 1]
-    df = pd.concat([df0, df1])
-
-
-    # Reduce data to columns of interest for this task.
-    # df = df[['words_as_string', 'has_both_lat_long_int']]
-
-    # Define corpus for CountVectorizer
-    #corpus = df['words_as_string'].tolist()
+    # Balancing data - not sure this is a good idea as it takes away features
+    #random.seed(30)
+    #df0 = df[df['has_both_lat_long_int'] == 0]
+    #df0 = df0.sample(n = 600, random_state=1)
+    #df1 = df[df['has_both_lat_long_int'] == 1]
+    #df = pd.concat([df0, df1])
 
     # Split data into training and testing sets
     data_train, data_test = train_test_split(df, test_size = 0.20, random_state = 12)
@@ -129,7 +153,8 @@ def prepare_data(file = in_file_name):
     X_test = vec.transform(data_test['words_as_string'].fillna(' '))
     y_test = data_test['has_both_lat_long_int']
 
-    return X_train, y_train, X_test, y_test, data_test
+    return X_train, y_train, X_test, y_test, data_test, data_train
+
 
 #X_train, y_train, X_test, y_test, data = prepare_data(path = path, data_file = data_file)
 
@@ -164,6 +189,18 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         y_pred = model.predict(X_test)
         y_proba = model.predict_proba(X_test)[:,1]
         return y_pred, y_proba
+
+def predict_proba_train(X_train, y_train, trained_model = 'yes'):
+    if trained_model == 'yes':
+        loaded_model = pickle.load(open('src/output/finalized_model.sav', 'rb'))
+        y_train_pred = loaded_model.predict(X_train)
+        y_train_proba = loaded_model.predict_proba(X_train)[:,1]
+        return y_train_pred, y_train_proba
+    if trained_model == 'no':
+        model = train(X_train, y_train)
+        y_train_pred = model.predict(X_train)
+        y_train_proba = model.predict_proba(X_train)[:,1]
+        return y_train_pred, y_train_proba
 
 # Uncomment for profiling
 #pr = cProfile.Profile()

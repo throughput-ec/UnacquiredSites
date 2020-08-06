@@ -10,7 +10,9 @@ import dash_table as dt
 from dash.dependencies import State, Input, Output
 
 #Loading Data
-data = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
+data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
+data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
+data = pd.concat([data_train, data_test])
 
 # GDDID dropdown
 gddid_list = list(data['_gddid'].unique())
@@ -27,7 +29,7 @@ for i in sentid_list:
 
 # Data Generator
 def datagen(data = data):
-    data=data[['_gddid', 'sentence', 'sentid', 'prediction_proba', 'predicted_label', 'found_lat', 'found_long']]
+    data=data[['_gddid', 'sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
     return(data)
 
 # Figure generator for first graph
@@ -47,7 +49,7 @@ def table_generator(data):
     data.reset_index(drop=True)
     data=sample_data.sort_values(by='sentid')
     #data=data[data['_gddid'] == gddid]
-    data=data[['sentence', 'sentid', 'prediction_proba', 'predicted_label', 'found_lat', 'found_long']]
+    data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long']]
     #a=data[data['sentid'] == int(sentence_id)-1]
     #b=data[data['sentid'] == int(sentence_id)]
     #c=data[data['sentid'] == int(sentence_id)+1]
@@ -101,7 +103,7 @@ def load_table(input_gddid, input_sentid):
     try:
         data= datagen()
         data=data[data['_gddid'] == input_gddid]
-        data=data[['sentence', 'sentid', 'prediction_proba', 'predicted_label', 'found_lat', 'found_long']]
+        data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
         a=data[data['sentid'] == int(input_sentid)-1]
         b=data[data['sentid'] == int(input_sentid)]
         c=data[data['sentid'] == int(input_sentid)+1]
@@ -124,18 +126,19 @@ def update_output(json_df):
 
     child = html.Div([
             dt.DataTable(style_data={
-        'whiteSpace': 'normal',
-        'height': 'auto',
-        'lineHeight': '15px'
-    },
-                                 id='table',
-                                 data=data,
-                                 columns=cols,
-                                 style_cell={'width': '50px',
-                                            'height': '30px',
-                                            'textAlign': 'left'}
-                                            )
-                       ])
+                                     'whiteSpace': 'normal',
+                                     'height': 'auto',
+                                     'lineHeight': '15px'
+                                     },
+                          id='table',
+                          data=data,
+                          columns=cols,
+                          sort_action='native',
+                          filter_action='native',
+                          style_cell={'width': '50px',
+                                      'height': '30px',
+                                      'textAlign': 'left'}
+                          )])
     return child
 
 
