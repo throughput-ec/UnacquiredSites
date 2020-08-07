@@ -22,7 +22,7 @@
 
 # Run the four scripts
 #all: src/output/comparison_file.tsv
-all : src/output/for_model/preprocessed_sentences.tsv src/output/comparison_file.tsv src/output/dashboard_file.tsv dashboard
+all : src/output/for_model/preprocessed_sentences.tsv src/output/comparison_file.tsv dashboard
 
 # Runs script that loads data.
 # Change paths to your local path.
@@ -40,9 +40,6 @@ src/output/comparison_file.tsv src/output/dashboard_file.tsv: src/output/for_mod
 # Runs script that creates  dashboard
 dashboard: src/output/comparison_file.tsv src/output/dashboard_file.tsv src/modules/dashboard/record_mining_dashboard.py
 	python3 src/modules/dashboard/record_mining_dashboard.py
-# Runs script that delivers a summary of data.
-# python3 src/dashboard/mlrm_dash.py
-
 
 # Remove all the outputs from the first part.
 clean:
