@@ -184,8 +184,26 @@ This profiling is recommended to only be run once. Once you finished this, comme
 ** TODO: Add args function in scripts to decide whether or not to do the profiling.
 
 #### preprocess_all_data.py
+Used timeit function with Python.
+I took random samples of 1000, 10000 to see speed.
+To increase data, I appended the same NLPSentence file 3 times. Ideally, would want to try with other data.
+Bibjson and Neotoma databases where used complete as those bases cannot be trimmed (Risk of missing joins)
+
+| n_sentences |  tot_time  |  
+| ----------- | ---------- |  
+|     1000    |    0.000   |
+|    10000    |    0.001   |
+|   112720    |    4.578   |
+|   338160    |   12.732   |
 
 
-
-## Instructions
-Review src README file to run the python package for inference.
+#### model.py
+Used timeit function with Python.
+I took random samples of 1000, 10000 and total number of sentences to train dataset.
+Always choose to train the model from scratch. Did not do profiling if a pretrained model was chosen.
+Did not increase data.
+| n_sentences |  tot_time  |  
+| ----------- | ---------- |  
+|     1000    |    0.000   |
+|    10000    |    1.001   |
+|   106640    |   12.732   |
