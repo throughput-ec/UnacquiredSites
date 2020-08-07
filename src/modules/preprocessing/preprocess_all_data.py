@@ -3,12 +3,13 @@ import nlp_sentence_loader as sentence_loader
 import bibliography_loader as bib_loader
 import utils as ard
 import neotoma_loader as nl
+import eda_creator as ec
 
 # For Jupyter
-# import src.modules.preprocessing.nlp_sentence_loader as sentence_loader
-# import src.modules.preprocessing.bibliography_loader as bib_loader
-# import src.modules.preprocessing.utils as ard
-# import src.modules.preprocessing.neotoma_loader as nl
+#import src.modules.preprocessing.nlp_sentence_loader as sentence_loader
+#import src.modules.preprocessing.bibliography_loader as bib_loader
+#import src.modules.preprocessing.utils as ard
+#import src.modules.preprocessing.neotoma_loader as nl
 import argparse
 import os
 import cProfile
@@ -16,29 +17,29 @@ import pstats
 import io
 
 # USAGE
-# python3 /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/modules/preprocessing/preprocess_all_data.py \
-# --output_path='/Users/seiryu8808/Desktop' --output_name='preprocessed_sentences.tsv'
-# --bib_file='/Users/seiryu8808/Desktop/bibjson' --neotoma_file='/Users/seiryu8808/Desktop/data-1590729612420.csv'
+# python3 src/preprocess_all_data.py \
+# --output_name='src/output/for_model/preprocessed_sentences.tsv' \
+# --bib_file='data/bibjson' \
+# --neotoma_file='data/data-1590729612420.csv' \
+# --create_eda='yes'
 
-path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/for_model'
-bib_file = r'/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/bibjson'
-neotoma_file = r'/Users/seiryu8808/Desktop/UWinsc/Github/Do_not_commit_data/data-1590729612420.csv'
+path = r'src/output/for_model'
+file = r'src/output/for_model/preprocessed_sentences.tsv'
+bib_file = r'data/bibjson'
+neotoma_file = r'data/data-1590729612420.csv'
 
 
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--output_path', type=str, default=path,
-                        help='Directory where you want to output the \
-                              preprocessed database.')
-    parser.add_argument('--output_name',
-                        type=str,
-                        default='preprocessed_sentences.tsv',
-                        help='Name of the file as tsv.')
+    parser.add_argument('--output_name', type=str, default=file,
+                        help='Path + Name of the file as tsv.')
     parser.add_argument('--bib_file', type=str, default=bib_file,
                         help='Directory where bibliography json file is.')
     parser.add_argument('--neotoma_file', type=str, default=neotoma_file,
                         help='Directory with Neotmas CSV.')
+    parser.add_argument('--create_eda', type=str, default='no',
+                        help='Use train model or no. Options: yes/no')
     args = parser.parse_args()
 
     print("Loading all datasets")
@@ -76,11 +77,22 @@ def main():
                                                  'longeast',
                                                  'found_sites']]
 
-    output_file = os.path.join(args.output_path, args.output_name)
+    output_file = os.path.join(args.output_name)
     nlp_bib_neotoma_for_model.to_csv(output_file, sep='\t', index=False)
 
-    print(f"You can find the preprocessed data in: \
-            {args.output_path}/{args.output_name}")
+    print(f"You can find the preprocessed data in: {args.output_name}")
+
+    if args.create_eda == 'yes':
+        print("Creating EDA files")
+        ec.not_in_neotoma(df = nlp_bib_neotoma, df2 = bibliography)
+        ec.sentences_w_coords_int(nlp_bib_neotoma)
+        ec.articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df)
+        ec.sentences_w_site_int(nlp_bib_neotoma)
+        ec.articles_wo_sites(nlp_bib_neotoma, bibliography, neotoma_joined_df)
+
+    if args.create_eda == 'no':
+        print("No EDA files was created.")
+
 
 
 def get_all_datasets(bib_path=bib_file, neotoma_path=neotoma_file):
@@ -135,19 +147,19 @@ def get_nlp_bib_neotoma(nlp_sentences, bibliography, neotoma_joined_df):
     nlp_bib_neotoma = nlp_bib.merge(neotoma_joined_df, on='doi')
     return nlp_bib, nlp_bib_neotoma
 
+# Do it once to do your profiling. Then comment this code chunk.
+#pr = cProfile.Profile()
+#pr.enable()
 
-pr = cProfile.Profile()
-pr.enable()
+#my_result = main()
 
-my_result = main()
+#pr.disable()
+#s = io.StringIO()
+#ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+#ps.print_stats()
 
-pr.disable()
-s = io.StringIO()
-ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
-ps.print_stats()
-
-with open('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/profiling/profiling_preprocess_data.txt', 'w+') as f:
-    f.write(s.getvalue())
+#with open('src/output/profiling/profiling_preprocess_data.txt', 'w+') as f:
+#    f.write(s.getvalue())
 
 if __name__ == '__main__':
     main()
