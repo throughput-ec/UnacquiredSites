@@ -36,10 +36,10 @@ def datagen(data = data):
 def fig_generator(sample_data):
     sample_data.reset_index(drop=True)
     sample_data=sample_data.sort_values(by='sentid')
+    plot_data=[]
+    plot_data.append(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba']))
 
-    plot_data=go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba'])
     plot_layout=go.Layout(title="Probability that a sentence has coordinates")
-
     fig = go.Figure(data = plot_data, layout=plot_layout)
     return(fig.data, fig.layout)
 
@@ -48,12 +48,7 @@ def fig_generator(sample_data):
 def table_generator(data):
     data.reset_index(drop=True)
     data=sample_data.sort_values(by='sentid')
-    #data=data[data['_gddid'] == gddid]
     data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long']]
-    #a=data[data['sentid'] == int(sentence_id)-1]
-    #b=data[data['sentid'] == int(sentence_id)]
-    #c=data[data['sentid'] == int(sentence_id)+1]
-    #data = pd.concat([a,b,c])
     return data.to_json()
 
 
@@ -70,6 +65,7 @@ app.layout = html.Div(children = [
                                                                   options=options_list,
                                                                   value='54b43249e138239d8684a1b2')]),
                                   dcc.Graph(id='proba_graph'),
+
                                   # Table
                                   html.Div([
                                             html.P('Choose a sentence number:'),
