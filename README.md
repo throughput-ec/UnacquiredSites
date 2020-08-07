@@ -109,6 +109,11 @@ This project will generate a dataset that provides the following information:
 * Whether the paper is useful for Neotoma.
 * Site Name, Location, Age Span and Site Descriptions from paper.
 
+## Pipeline
+The current pipeline that is followed is:
+![img](figures/img/RMflow.jpg)
+
+
 ### Instructions
 ##### Docker
 
