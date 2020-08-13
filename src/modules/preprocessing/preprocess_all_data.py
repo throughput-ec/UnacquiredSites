@@ -66,6 +66,7 @@ def main():
                                              new_col_name='found_sites')
 
     nlp_bib_neotoma_for_model = nlp_bib_neotoma[['_gddid',
+                                                 'title',
                                                  'digits_regex',
                                                  'sentid',
                                                  'words',

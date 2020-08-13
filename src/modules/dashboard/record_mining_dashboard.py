@@ -9,13 +9,15 @@ import dash_core_components as dcc
 import dash_table as dt
 from dash.dependencies import State, Input, Output
 
+
+
 #Loading Data
 data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
 data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
 data = pd.concat([data_train, data_test])
 
 # GDDID dropdown
-gddid_list = list(data['_gddid'].unique())
+gddid_list = list(data['title'].unique())
 options_list = []
 for i in gddid_list:
     options_list.append({'label':i, 'value':i})
@@ -29,7 +31,7 @@ for i in sentid_list:
 
 # Data Generator
 def datagen(data = data):
-    data=data[['_gddid', 'sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
+    data=data[['title', '_gddid', 'sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
     return(data)
 
 # Figure generator for first graph
@@ -54,51 +56,49 @@ def table_generator(data):
 
 # Dash application
 app = dash.Dash()
+app.config['suppress_callback_exceptions'] = True
 
-app.layout = html.Div(children = [
-                                  html.H1('Record Mining Dashboard'),
-                                  #Graph
-                                  html.Div(children=[
-                                                     html.P('Choose a GDDID:'),
-                                                     dcc.Dropdown(
-                                                                  id="gddid_dropdown",
-                                                                  options=options_list,
-                                                                  value='54b43249e138239d8684a1b2')]),
-                                  dcc.Graph(id='proba_graph'),
+app.layout = html.Div(children=[html.H1('Record Mining Dashboard'),
+                                dcc.Tabs(id='tabs-example', value='tab-1', children=[
+                                                                                     dcc.Tab(label='Tab one', value='tab-1'),
+                                                                                     dcc.Tab(label='Tab two', value='tab-2'),
+                                                                                     ]),
+                                html.Div(id='tabs-example-content')
+                                ])
 
-                                  # Table
-                                  html.Div([
-                                            html.P('Choose a sentence number:'),
-                                            dcc.Dropdown(
-                                                         id="sentid_dropdown",
-                                                         options=sent_opt_list,
-                                                         value='5')]),
-                                # Div to store json serialized dataframe
-                                html.Div(id='json_df_store', style={'display':'none'}),
-                                html.Div(id='table_output')
-                                                          ])
+
 # Graph
 @app.callback(Output('proba_graph', 'figure'),
-              [Input('gddid_dropdown', 'value')])
+              [Input('title_dropdown', 'value')])
 
-def update_plot(input_gddid):
+def update_plot(input_title):
     df= datagen()
-    sample_data = df[df["_gddid"] == input_gddid]
+    sample_data = df[df["title"] == input_title]
     trace,layout = fig_generator(sample_data)
     return {
            'data': trace,
            'layout':layout
            }
 
+# GDD output
+@app.callback(Output('gddid_output', 'children'),
+              [Input('title_dropdown', 'value')])
+
+def update_output(input_title):
+    df= datagen()
+    sample_data = df[df["title"] == input_title]
+    title = sample_data['_gddid'].unique()
+    return 'The GDDID for that title is: \n{}'.format(title)
+
 # Table
 
 @app.callback(Output('json_df_store', 'children'),
-              [Input('gddid_dropdown', 'value'),
+              [Input('title_dropdown', 'value'),
                Input('sentid_dropdown', 'value')])
-def load_table(input_gddid, input_sentid):
+def load_table(input_title, input_sentid):
     try:
         data= datagen()
-        data=data[data['_gddid'] == input_gddid]
+        data=data[data['title'] == input_title]
         data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
         a=data[data['sentid'] == int(input_sentid)-1]
         b=data[data['sentid'] == int(input_sentid)]
@@ -137,7 +137,40 @@ def update_output(json_df):
                           )])
     return child
 
+# Tabs
+@app.callback(Output('tabs-example-content', 'children'),
+              [Input('tabs-example', 'value')])
 
+def render_content(tab):
+    if tab == 'tab-1':
+        return html.Div(children=[
+                                  #Graph
+                                  html.Div(children=[html.P('Choose a paper:'),
+                                                     dcc.Dropdown(id="title_dropdown",
+                                                                  options=options_list,
+                                                                  value='Paradigms and proboscideans in the southern Great Lakes region, USA')]),
+                                                     dcc.Graph(id='proba_graph'),
+                                                     html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'}),
+                                  #Table
+                                  html.Div(children=[html.P('Choose a sentence number:'),
+                                                     dcc.Dropdown(id="sentid_dropdown",
+                                                                  options=sent_opt_list,
+                                                                  value='5')]),
+                                  #Div to store json serialized dataframe
+                                  html.Div(id='json_df_store', style={'display':'none'}),
+                                  html.Div(id='table_output')
+
+                                  ])
+
+    elif tab == 'tab-2':
+        return html.Div(children=[
+                                  html.Div(children=[html.P('Choose a paper:'),
+                                                     dcc.Dropdown(id="title_dropdown",
+                                                                  options=options_list,
+                                                                  value='Paradigms and proboscideans in the southern Great Lakes region, USA')]),
+                                                     html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'})
+                                  #Table
+                                  ])
 
 
 
