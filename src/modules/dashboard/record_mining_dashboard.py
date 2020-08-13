@@ -41,10 +41,13 @@ def fig_generator(sample_data):
     sample_data.reset_index(drop=True)
     sample_data=sample_data.sort_values(by='sentid')
     plot_data=[]
-    plot_data.append(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba']))
+    #plot_data.append(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba']))
 
     plot_layout=go.Layout(title="Probability that a sentence has coordinates")
-    fig = go.Figure(data = plot_data, layout=plot_layout)
+    #fig = go.Figure(data = plot_data, layout=plot_layout)
+    fig = go.Figure(layout=plot_layout)
+    fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba'], mode='markers', name='proba'))
+    fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['original_label'], mode='markers', name='original label'))
     return(fig.data, fig.layout)
 
 
@@ -200,7 +203,9 @@ def update_output_t2(json_df_t2):
         [Input("save-button","n_clicks")],
         [State("table","data")]
         )
+
 def selected_data_to_csv(nclicks,table1):
+
     if nclicks == 0:
         raise PreventUpdate
     else:
