@@ -181,11 +181,12 @@ def update_output_t2(json_df_t2):
                                    {'name': 'coordinates(y/n)','id': 'coordinates(y/n)', 'editable': True}],
                           sort_action='native',
                           filter_action='native',
-                          
-                          editable=True,
                           style_cell={'width': '50px',
                                       'height': '30px',
-                                      'textAlign': 'left'}
+                                      'textAlign': 'left'},
+                          export_format='csv',
+                          export_headers='display',
+                          merge_duplicate_headers=True
                           )])
     return child2
 
