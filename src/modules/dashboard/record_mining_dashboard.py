@@ -103,6 +103,7 @@ def update_output(input_title):
                Input('sentid_dropdown', 'value')])
 def load_table(input_title, input_sentid):
     try:
+        data=''
         data= datagen()
         data=data[data['title'] == input_title]
         data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
@@ -123,7 +124,7 @@ def load_table(input_title, input_sentid):
 
 def update_output(json_df):
     info_dataframe = pd.read_json(json_df)
-    data = info_dataframe .to_dict("rows")
+    data = info_dataframe.to_dict("rows")
     cols = [{"name": i, "id": i} for i in info_dataframe.columns]
 
     child = html.Div([
@@ -147,10 +148,11 @@ def update_output(json_df):
 @app.callback(Output('json_df_store_t2', 'children'),
               [Input('title_dropdown', 'value')])
 def load_table_t2(input_title):
+    data =''
     data= datagen()
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
-    data=data[['sentid','sentence', 'prediction_proba', 'coordinates(y/n)']]
+    data=data[['sentid','sentence', 'prediction_proba', 'predicted_label','coordinates(y/n)']]
 
     data=data.to_json()
     return data
@@ -159,11 +161,12 @@ def load_table_t2(input_title):
               [Input('json_df_store_t2', 'children')])
 
 def update_output_t2(json_df_t2):
-    info_dataframe = pd.read_json(json_df_t2)
-    data = info_dataframe.to_dict("rows")
-    cols = [{"name": i, "id": i} for i in info_dataframe.columns]
+    info_dataframe_t2 = pd.read_json(json_df_t2)
+    info_dataframe_t2.reset_index(drop=True, inplace=True)
+    data = info_dataframe_t2.to_dict("rows")
+    cols = [{"name": i, "id": i} for i in info_dataframe_t2.columns]
 
-    child = html.Div([
+    child2 = html.Div([
             dt.DataTable(style_data={
                                      'whiteSpace': 'normal',
                                      'height': 'auto',
@@ -171,14 +174,20 @@ def update_output_t2(json_df_t2):
                                      },
                           id='table',
                           data=data,
-                          columns=cols,
+                          columns=[{'name': 'sentid', 'id': 'sentid', 'editable':False},
+                                   {'name': 'sentence', 'id': 'sentence', 'editable':False},
+                                   {'name': 'prediction_proba', 'id': 'prediction_proba', 'editable':False},
+                                   {'name': 'predicted_label', 'id': 'predicted_label', 'editable':False},
+                                   {'name': 'coordinates(y/n)','id': 'coordinates(y/n)', 'editable': True}],
                           sort_action='native',
                           filter_action='native',
+                          
+                          editable=True,
                           style_cell={'width': '50px',
                                       'height': '30px',
                                       'textAlign': 'left'}
                           )])
-    return child
+    return child2
 
 # Tabs
 @app.callback(Output('tabs-example-content', 'children'),
