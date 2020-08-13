@@ -59,9 +59,15 @@ app = dash.Dash()
 app.config['suppress_callback_exceptions'] = True
 
 app.layout = html.Div(children=[html.H1('Record Mining Dashboard'),
+                                html.Div(children=[html.P('Choose a paper:'),
+                                                   dcc.Dropdown(id="title_dropdown",
+                                                                options=options_list,
+                                                                value='Paradigms and proboscideans in the southern Great Lakes region, USA')]),
+                                                   html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'}),
+
                                 dcc.Tabs(id='tabs-example', value='tab-1', children=[
-                                                                                     dcc.Tab(label='Tab one', value='tab-1'),
-                                                                                     dcc.Tab(label='Tab two', value='tab-2'),
+                                                                                     dcc.Tab(label='Graphics', value='tab-1'),
+                                                                                     dcc.Tab(label='Complete article', value='tab-2'),
                                                                                      ]),
                                 html.Div(id='tabs-example-content')
                                 ])
@@ -129,6 +135,43 @@ def update_output(json_df):
                           id='table',
                           data=data,
                           columns=cols,
+                          style_cell={'width': '50px',
+                                      'height': '30px',
+                                      'textAlign': 'left'}
+                          )])
+    return child
+
+
+# Table2
+
+@app.callback(Output('json_df_store_t2', 'children'),
+              [Input('title_dropdown', 'value')])
+def load_table_t2(input_title):
+    data= datagen()
+    data=data[data['title'] == input_title]
+    data['coordinates(y/n)'] = ''
+    data=data[['sentid','sentence', 'prediction_proba', 'coordinates(y/n)']]
+
+    data=data.to_json()
+    return data
+
+@app.callback(Output('table_output_t2', 'children'),
+              [Input('json_df_store_t2', 'children')])
+
+def update_output_t2(json_df_t2):
+    info_dataframe = pd.read_json(json_df_t2)
+    data = info_dataframe.to_dict("rows")
+    cols = [{"name": i, "id": i} for i in info_dataframe.columns]
+
+    child = html.Div([
+            dt.DataTable(style_data={
+                                     'whiteSpace': 'normal',
+                                     'height': 'auto',
+                                     'lineHeight': '15px'
+                                     },
+                          id='table',
+                          data=data,
+                          columns=cols,
                           sort_action='native',
                           filter_action='native',
                           style_cell={'width': '50px',
@@ -143,19 +186,15 @@ def update_output(json_df):
 
 def render_content(tab):
     if tab == 'tab-1':
-        return html.Div(children=[
-                                  #Graph
-                                  html.Div(children=[html.P('Choose a paper:'),
-                                                     dcc.Dropdown(id="title_dropdown",
-                                                                  options=options_list,
-                                                                  value='Paradigms and proboscideans in the southern Great Lakes region, USA')]),
-                                                     dcc.Graph(id='proba_graph'),
-                                                     html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'}),
+        return html.Div(children=[#Graph
+                                  dcc.Graph(id='proba_graph'),
+
                                   #Table
                                   html.Div(children=[html.P('Choose a sentence number:'),
                                                      dcc.Dropdown(id="sentid_dropdown",
                                                                   options=sent_opt_list,
                                                                   value='5')]),
+
                                   #Div to store json serialized dataframe
                                   html.Div(id='json_df_store', style={'display':'none'}),
                                   html.Div(id='table_output')
@@ -164,12 +203,11 @@ def render_content(tab):
 
     elif tab == 'tab-2':
         return html.Div(children=[
-                                  html.Div(children=[html.P('Choose a paper:'),
-                                                     dcc.Dropdown(id="title_dropdown",
-                                                                  options=options_list,
-                                                                  value='Paradigms and proboscideans in the southern Great Lakes region, USA')]),
-                                                     html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'})
+                                  html.Div(children=[html.P('Mark the last column if the sentence has a coordinate')]),
                                   #Table
+                                  #Div to store json serialized dataframe
+                                  html.Div(id='json_df_store_t2', style={'display':'none'}),
+                                  html.Div(id='table_output_t2')
                                   ])
 
 
