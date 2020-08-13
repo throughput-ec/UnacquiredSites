@@ -2,12 +2,14 @@ import plotly.graph_objects as go
 import dash
 import numpy as np
 import pandas as pd
+import os
 
 import plotly.offline as pyo
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_table as dt
 from dash.dependencies import State, Input, Output
+from dash.exceptions import PreventUpdate
 
 
 
@@ -93,8 +95,8 @@ def update_plot(input_title):
 def update_output(input_title):
     df= datagen()
     sample_data = df[df["title"] == input_title]
-    title = sample_data['_gddid'].unique()
-    return 'The GDDID for that title is: \n{}'.format(title)
+    gdd = sample_data['_gddid'].unique()
+    return 'The GDDID for that title is: \n{}'.format(gdd)
 
 # Table
 
@@ -167,6 +169,8 @@ def update_output_t2(json_df_t2):
     cols = [{"name": i, "id": i} for i in info_dataframe_t2.columns]
 
     child2 = html.Div([
+            html.Button(id="save-button",n_clicks=0,children="Save"),
+            html.Div(id="output-1",children="Mark the last column if the sentence has a coordinate. Press button to save changes"),
             dt.DataTable(style_data={
                                      'whiteSpace': 'normal',
                                      'height': 'auto',
@@ -184,11 +188,34 @@ def update_output_t2(json_df_t2):
                           style_cell={'width': '50px',
                                       'height': '30px',
                                       'textAlign': 'left'},
-                          export_format='csv',
-                          export_headers='display',
+
                           merge_duplicate_headers=True
-                          )])
+                          )
+            ])
     return child2
+
+# Save Button
+@app.callback(
+        Output("output-1","children"),
+        [Input("save-button","n_clicks")],
+        [State("table","data")]
+        )
+def selected_data_to_csv(nclicks,table1):
+    if nclicks == 0:
+        raise PreventUpdate
+    else:
+        #gdd_name=''
+        #gdd_name = gddid_output
+        #print(gdd_name)
+
+        #gdd_name = gdd_name.append('.tsv')
+        gdd_name = 'file.tsv'
+        path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/from_dashboard'
+        output_file = os.path.join(path,gdd_name)
+
+        pd.DataFrame(table1).to_csv(output_file, sep='\t', index = False)
+        return "Data Submitted"
+
 
 # Tabs
 @app.callback(Output('tabs-example-content', 'children'),
@@ -212,9 +239,7 @@ def render_content(tab):
                                   ])
 
     elif tab == 'tab-2':
-        return html.Div(children=[
-                                  html.Div(children=[html.P('Mark the last column if the sentence has a coordinate')]),
-                                  #Table
+        return html.Div(children=[#Table
                                   #Div to store json serialized dataframe
                                   html.Div(id='json_df_store_t2', style={'display':'none'}),
                                   html.Div(id='table_output_t2')
