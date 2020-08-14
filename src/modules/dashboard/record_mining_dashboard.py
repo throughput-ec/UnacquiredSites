@@ -39,6 +39,8 @@ def datagen(data = data):
 # Figure generator for first graph
 def fig_generator(sample_data):
     sample_data.reset_index(drop=True)
+    #mask=(sample_data['prediction_proba'] > 0.2)
+    sample_data=sample_data.loc[(sample_data['prediction_proba']>0.02) | (sample_data['original_label']>0.02)]
     sample_data=sample_data.sort_values(by='sentid')
     plot_data=[]
     #plot_data.append(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba']))
@@ -48,6 +50,7 @@ def fig_generator(sample_data):
     fig = go.Figure(layout=plot_layout)
     fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba'], mode='markers', name='proba'))
     fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['original_label'], mode='markers', name='original label'))
+    fig.update_layout(yaxis=dict(range=[0,1.02]))
     return(fig.data, fig.layout)
 
 
