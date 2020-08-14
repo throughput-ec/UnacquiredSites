@@ -1,7 +1,7 @@
 import utils as ard
 import os
 
-def not_in_neotoma(df, df2, path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/eda'):
+def not_in_neotoma(df, df2, path = r'src/output/eda'):
     """Obtain all the article DOI's that are not in the Neotoma Database
 
     Parameters
@@ -30,7 +30,7 @@ def not_in_neotoma(df, df2, path = r'/Users/seiryu8808/Desktop/UWinsc/Github/Una
     print("A TSV file with articles not found in Neotoma was created on your EDA output folder.")
     return arts_not_in_neotoma
 
-def sentences_w_coords_int(df_with_int, path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/eda'):
+def sentences_w_coords_int(df_with_int, path = r'src/output/eda'):
     """Obtain all the intersections between sentences in NLP df and Neotoma DB
 
     Parameters
@@ -54,7 +54,7 @@ def sentences_w_coords_int(df_with_int, path = r'/Users/seiryu8808/Desktop/UWins
     print("A TSV file with sentences that have coordinates was created in your EDA output folder.")
     return sent_with_int_df
 
-def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/eda'):
+def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'src/output/eda'):
     """Obtain all article that have no coordinate intersections
 
     Parameters
@@ -92,7 +92,7 @@ def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = 
 
 
 
-def sentences_w_site_int(nlp_bib_neotoma, path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/eda'):
+def sentences_w_site_int(nlp_bib_neotoma, path = r'src/output/eda'):
     """Obtain all article that have no coordinate intersections
 
     Parameters
@@ -119,7 +119,7 @@ def sentences_w_site_int(nlp_bib_neotoma, path = r'/Users/seiryu8808/Desktop/UWi
     print("A TSV file of sentences with Site intersections was created in your EDA output folder.")
     return sn_inter
 
-def articles_wo_sites(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/eda'):
+def articles_wo_sites(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'src/output/eda'):
     """Obtain all article that have no sitenames intersections
 
     Parameters

@@ -51,6 +51,7 @@ def fig_generator(sample_data):
     fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba'], mode='markers', name='proba'))
     fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['original_label'], mode='markers', name='original label'))
     fig.update_layout(yaxis=dict(range=[0,1.02]))
+    fig.update_layout(xaxis=dict(range=[0,1000]))
     return(fig.data, fig.layout)
 
 
@@ -220,7 +221,7 @@ def selected_data_to_csv(nclicks,table1):
 
         #gdd_name = gdd_name.append('.tsv')
         gdd_name = 'file.tsv'
-        path = r'/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/from_dashboard'
+        path = r'src/output/from_dashboard'
         output_file = os.path.join(path,gdd_name)
 
         pd.DataFrame(table1).to_csv(output_file, sep='\t', index = False)
