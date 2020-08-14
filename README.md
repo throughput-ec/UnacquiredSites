@@ -111,6 +111,9 @@ This project will generate a dataset that provides the following information:
 
 ## Pipeline
 The current pipeline that is followed is:
+\n
+\n
+
 ![img](figures/img/RMFlow.jpg)
 
 
@@ -177,6 +180,14 @@ http://127.0.0.1:8050/
 Write reports
 ```
 
+## Running the dashboard
+The Record Mining Machine Learning Dashboard can help the user identify sentences that are incorrectly tagged and so, fix the problem.
+
+Please watch this short video on how to use this tool:
+\n
+![img](figures/img/dashboard_recording.mov)
+
+\n
 ##  Profiling
 Detailed profiling logs can be found on:
 ```
