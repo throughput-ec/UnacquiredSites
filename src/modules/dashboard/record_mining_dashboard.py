@@ -164,6 +164,7 @@ def load_table_t2(input_title):
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
     data=data[['sentid','sentence', 'prediction_proba', 'predicted_label','coordinates(y/n)']]
+    data=data.sort_values(by='sentid')
 
     data=data.to_json()
     return data
@@ -223,7 +224,7 @@ def selected_data_to_csv(nclicks,table1):
         gdd_name = 'file.tsv'
         path = r'src/output/from_dashboard'
         output_file = os.path.join(path,gdd_name)
-
+        table1=table1.sort_values(by='sentid')
         pd.DataFrame(table1).to_csv(output_file, sep='\t', index = False)
         return "Data Submitted"
 
