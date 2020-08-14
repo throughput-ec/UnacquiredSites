@@ -111,7 +111,7 @@ This project will generate a dataset that provides the following information:
 
 ## Pipeline
 The current pipeline that is followed is:
-![img](/figures/img/RMflow.jpg)
+![img](figures/img/RMflow.jpg)
 
 
 ### Instructions
