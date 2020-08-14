@@ -113,6 +113,7 @@ def load_table(input_title, input_sentid):
     try:
         data=''
         data= datagen()
+        data.reset_index(inplace=True)
         data=data[data['title'] == input_title]
         data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
         a=data[data['sentid'] == int(input_sentid)-1]
@@ -158,6 +159,7 @@ def update_output(json_df):
 def load_table_t2(input_title):
     data =''
     data= datagen()
+    data.reset_index(inplace=True)
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
     data=data[['sentid','sentence', 'prediction_proba', 'predicted_label','coordinates(y/n)']]
