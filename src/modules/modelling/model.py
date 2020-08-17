@@ -75,7 +75,7 @@ def main():
     predicted_proba = pd.DataFrame(y_proba)
     actual_label = actual_label.reset_index()
 
-    original_sentence = pd.DataFrame(data_test[['_gddid','sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
+    original_sentence = pd.DataFrame(data_test[['_gddid', 'title', 'sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
     original_sentence = original_sentence.reset_index()
 
     test_pred_comp = guessed_label.join(actual_label)
@@ -101,7 +101,7 @@ def main():
     predicted_train_proba = pd.DataFrame(y_train_proba)
     actual_train_label = actual_train_label.reset_index()
 
-    original_train_sentence = pd.DataFrame(data_train[['_gddid','sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
+    original_train_sentence = pd.DataFrame(data_train[['_gddid', 'title', 'sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
     original_train_sentence = original_train_sentence.reset_index()
 
     train_pred_comp = guessed_train_label.join(actual_train_label)
