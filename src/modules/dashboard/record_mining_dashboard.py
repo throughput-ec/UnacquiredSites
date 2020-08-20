@@ -10,6 +10,8 @@ import dash_core_components as dcc
 import dash_table as dt
 from dash.dependencies import State, Input, Output
 from dash.exceptions import PreventUpdate
+import time, os, fnmatch, shutil
+from collections import OrderedDict
 
 #Loading Data
 data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
@@ -28,6 +30,10 @@ list.sort(sentid_list)
 sent_opt_list = []
 for i in sentid_list:
     sent_opt_list.append({'label':i, 'value':i})
+
+
+# Dataframe 0 or 1
+marking_df = pd.DataFrame(OrderedDict([('coords_or_not', ['0', '1'])]))
 
 # Data Generator
 def datagen(data = data):
@@ -161,7 +167,7 @@ def load_table_t2(input_title):
     data.reset_index(inplace=True)
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
-    data=data[['sentid','sentence', 'prediction_proba', 'predicted_label','coordinates(y/n)']]
+    data=data[['_gddid','sentid','sentence', 'prediction_proba', 'predicted_label','coordinates(y/n)']]
     data=data.sort_values(by='sentid')
 
     data=data.to_json()
@@ -190,8 +196,16 @@ def update_output_t2(json_df_t2):
                                    {'name': 'sentence', 'id': 'sentence', 'editable':False},
                                    {'name': 'prediction_proba', 'id': 'prediction_proba', 'editable':False},
                                    {'name': 'predicted_label', 'id': 'predicted_label', 'editable':False},
-                                   {'name': 'coordinates(y/n)','id': 'coordinates(y/n)', 'editable': True}],
-                          sort_action='native',
+                                   {'name': 'coordinates','id': 'coordinates', 'editable': True, 'presentation':'dropdown'},
+                                   {'name': '_gddid', 'id': '_gddid', 'editable':False, 'hideable':True}],
+
+                          dropdown={'coordinates':{
+                                                   'options':[
+                                                              {'label': i, 'value': i}
+                                                              for i in marking_df['coords_or_not'].unique()
+                                                              ]
+                                                   }},
+            sort_action='native',
                           filter_action='native',
                           style_cell={'width': '50px',
                                       'height': '30px',
@@ -219,11 +233,16 @@ def selected_data_to_csv(nclicks,table1):
         #print(gdd_name)
 
         #gdd_name = gdd_name.append('.tsv')
-        gdd_name = 'file.tsv'
+        t = time.localtime()
+        timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
+        gdd_name = ('Output_'+timestamp+'.tsv')
         path = r'src/output/from_dashboard'
         output_file = os.path.join(path,gdd_name)
 
-        pd.DataFrame(table1).to_csv(output_file, sep='\t', index = False)
+        table1=pd.DataFrame(table1)
+        table1=table1[['_gddid','sentid', 'prediction_proba', 'predicted_label', 'coordinates']]
+        table1=table1[table1.coordinates.notnull()]
+        table1.to_csv(output_file, sep='\t', index = False)
         return "Data Submitted"
 
 
