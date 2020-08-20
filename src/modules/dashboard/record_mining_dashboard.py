@@ -11,8 +11,6 @@ import dash_table as dt
 from dash.dependencies import State, Input, Output
 from dash.exceptions import PreventUpdate
 
-
-
 #Loading Data
 data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
 data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
@@ -224,7 +222,7 @@ def selected_data_to_csv(nclicks,table1):
         gdd_name = 'file.tsv'
         path = r'src/output/from_dashboard'
         output_file = os.path.join(path,gdd_name)
-        
+
         pd.DataFrame(table1).to_csv(output_file, sep='\t', index = False)
         return "Data Submitted"
 
