@@ -3,6 +3,7 @@ import dash
 import numpy as np
 import pandas as pd
 import os
+import glob
 
 import plotly.offline as pyo
 import dash_html_components as html
@@ -196,8 +197,8 @@ def update_output_t2(json_df_t2):
                                    {'name': 'sentence', 'id': 'sentence', 'editable':False},
                                    {'name': 'prediction_proba', 'id': 'prediction_proba', 'editable':False},
                                    {'name': 'predicted_label', 'id': 'predicted_label', 'editable':False},
-                                   {'name': 'coordinates','id': 'coordinates', 'editable': True, 'presentation':'dropdown'},
-                                   {'name': '_gddid', 'id': '_gddid', 'editable':False, 'hideable':True}],
+                                   {'name': 'validated_coordinates','id': 'coordinates', 'editable': True, 'presentation':'dropdown'}],
+                                   #{'name': '_gddid', 'id': '_gddid', 'editable':False, 'hideable':True}],
 
                           dropdown={'coordinates':{
                                                    'options':[
@@ -224,25 +225,32 @@ def update_output_t2(json_df_t2):
         )
 
 def selected_data_to_csv(nclicks,table1):
+    t = time.localtime()
+    timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
+    gdd_name = ('Output_'+timestamp+'.tsv')
+    path = r'src/output/from_dashboard'
+
+    output_file = os.path.join(path,gdd_name)
+
+    list_of_files = glob.glob('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/from_dashboard/*.tsv') # * means all if need specific format then *.csv
+    input_file = max(list_of_files, key=os.path.getmtime)
 
     if nclicks == 0:
         raise PreventUpdate
     else:
-        #gdd_name=''
-        #gdd_name = gddid_output
-        #print(gdd_name)
-
-        #gdd_name = gdd_name.append('.tsv')
-        t = time.localtime()
-        timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
-        gdd_name = ('Output_'+timestamp+'.tsv')
-        path = r'src/output/from_dashboard'
-        output_file = os.path.join(path,gdd_name)
-
         table1=pd.DataFrame(table1)
-        table1=table1[['_gddid','sentid', 'prediction_proba', 'predicted_label', 'coordinates']]
+        table1['timestamp']=timestamp
+        table1=table1[['_gddid','sentid', 'prediction_proba', 'predicted_label', 'coordinates', 'timestamp']]
+        table1['timestamp']=timestamp
         table1=table1[table1.coordinates.notnull()]
-        table1.to_csv(output_file, sep='\t', index = False)
+        table1=table1.rename(columns={'coordinates':'validated_coordinates'})
+        #table1.to_csv(output_file, sep='\t', index = False)
+
+        older_data=pd.read_csv(input_file, sep='\t')
+        older_data.columns=table1.columns
+        new_data=pd.concat([table1, older_data])
+        new_data.to_csv(output_file, sep='\t', mode='a+',header=True, index=False)
+
         return "Data Submitted"
 
 
