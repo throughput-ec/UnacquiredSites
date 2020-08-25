@@ -23,20 +23,23 @@ import cProfile, pstats, io
 ## USAGE
 ## python3 src/modules/modelling/model.py \
 ## --input_file = 'src/output/for_model/preprocessed_sentences.tsv' \
-## --trained_model='yes'
+## --trained_model='yes' --validation_file='src/output/from_dashboard/last_validated.tsv'
 
 in_file_name = r'src/output/for_model/preprocessed_sentences.tsv'
+
+validation_file = r''
 
 out_file_name = r'src/output/predictions/comparison_file.tsv'
 
 out_dashboard_file_name = r'src/output/predictions/dashboard_file.tsv'
 
-
-
 def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--input_file', type=str, default=in_file_name,
+                        help='Directory where your input data is.')
+
+    parser.add_argument('--validation_file', type=str, default=validation_file,
                         help='Directory where your input data is.')
 
     parser.add_argument('--output_file', type=str, default=out_file_name,
@@ -48,7 +51,7 @@ def main():
     args = parser.parse_args()
 
 
-    X_train, y_train, X_test, y_test, data_test, data_train = prepare_data(file = args.input_file)
+    X_train, y_train, X_test, y_test, data_test, data_train = prepare_data(file = args.input_file, validation_file = args.validation_file)
     print("Using CountVectorizer to normalize data...")
 
     # Start predictions
@@ -121,14 +124,30 @@ def main():
     train_pred_comp.to_csv(output_file2, sep='\t', index = False)
     print(f"Saving train labels - comparison dataframe for dashboard in: {output_file2}")
 
-def prepare_data(file = in_file_name):
+def prepare_data(file = in_file_name, validation_file = validation_file):
     input_file = file
-    df = pd.read_csv(input_file, sep='\t')
+
+    if validation_file==r'':
+        df = pd.read_csv(input_file, sep='\t')
+        df['validated_coordinates']=''
+        print("Did not use file with validated coordinates")
+
+    else:
+        data = pd.read_csv(input_file, sep='\t')
+        validated_data = pd.read_csv(validation_file, sep='\t')
+        validated_data=validated_data[['_gddid', 'sentid', 'validated_coordinates', 'timestamp']]
+        validated_data['validated_coordinates']=validated_data['validated_coordinates'].astype(int)
+        df=pd.merge(data, validated_data,  how='left', left_on=['_gddid','sentid'], right_on = ['_gddid','sentid'])
+        print("Used file with validated coordinates")
+
+
 
     df['has_both_lat_long_int'] = ((df['found_lat'].apply(len) > 2) & (df['found_long'].apply(len) > 2 ))
 
     # Map True to One and False to Zero
     df['has_both_lat_long_int'] = df['has_both_lat_long_int'].astype(int)
+
+    df.loc[df['validated_coordinates'].isnull(),'validated_coordinates'] = df['has_both_lat_long_int']
 
     # Balancing data - not sure this is a good idea as it takes away features
     #random.seed(30)
@@ -146,14 +165,25 @@ def prepare_data(file = in_file_name):
                           tokenizer=nltk.word_tokenize)
 
     # Fit and transform training
-    X_train = vec.fit_transform(data_train['words_as_string'].fillna(' '))
-    y_train = data_train['has_both_lat_long_int']
+    if validation_file==r'':
+        X_train = vec.fit_transform(data_train['words_as_string'].fillna(' '))
+        y_train = data_train['has_both_lat_long_int']
 
-    # Transform test data without fitting
-    X_test = vec.transform(data_test['words_as_string'].fillna(' '))
-    y_test = data_test['has_both_lat_long_int']
+        # Transform test data without fitting
+        X_test = vec.transform(data_test['words_as_string'].fillna(' '))
+        y_test = data_test['has_both_lat_long_int']
 
-    return X_train, y_train, X_test, y_test, data_test, data_train
+        return X_train, y_train, X_test, y_test, data_test, data_train
+
+    else:
+        X_train = vec.fit_transform(data_train['words_as_string'].fillna(' '))
+        y_train = data_train['validated_coordinates']
+
+        # Transform test data without fitting
+        X_test = vec.transform(data_test['words_as_string'].fillna(' '))
+        y_test = data_test['validated_coordinates']
+
+        return X_train, y_train, X_test, y_test, data_test, data_train
 
 
 #X_train, y_train, X_test, y_test, data = prepare_data(path = path, data_file = data_file)
