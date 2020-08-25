@@ -35,7 +35,7 @@ if args.input_validated_file==in_file_name:
     data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
     data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
     data = pd.concat([data_train, data_test])
-    data['validated_coordinates']=''
+    data['validated_coordinates']='revise'
 
 else:
     data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
@@ -65,10 +65,15 @@ for i in sentid_list:
 
 
 # Dataframe 0 or 1
-validated_list = list(data['validated_coordinates'].unique())
-validated_opt_list = []
-for i in validated_list:
-    validated_opt_list.append({'label':i, 'value':i})
+if args.input_validated_file==in_file_name:
+    marking_df = pd.DataFrame(OrderedDict([('coords_or_not', ['0', '1', 'revise'])]))
+    validated_opt_list = [{'label': i, 'value': i} for i in marking_df['coords_or_not'].unique()]
+
+else:
+    validated_list = list(data['validated_coordinates'].unique())
+    validated_opt_list = []
+    for i in validated_list:
+        validated_opt_list.append({'label':i, 'value':i})
 
 # Data Generator
 def datagen(data = data):
