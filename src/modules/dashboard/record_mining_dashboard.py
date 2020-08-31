@@ -3,6 +3,8 @@ import dash
 import numpy as np
 import pandas as pd
 import os
+import base64
+import glob
 
 import plotly.offline as pyo
 import dash_html_components as html
@@ -10,11 +12,43 @@ import dash_core_components as dcc
 import dash_table as dt
 from dash.dependencies import State, Input, Output
 from dash.exceptions import PreventUpdate
+import time, os, fnmatch, shutil
+from collections import OrderedDict
 
-#Loading Data
-data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
-data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
-data = pd.concat([data_train, data_test])
+import argparse
+
+## How To run From Console
+# python3 src/modules/dashboard/record_mining_dashboard.py --input_validated_file='src/output/from_dashboard/Output_Aug_20_2020_174852.tsv'
+# If no file is chosen, it will use raw data
+
+in_file_name = r''
+
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--input_validated_file', type=str, default=in_file_name,
+                    help='Directory where your validated file is.')
+
+args = parser.parse_args()
+
+if args.input_validated_file==in_file_name:
+    data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
+    data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
+    data = pd.concat([data_train, data_test])
+    data['validated_coordinates']='revise'
+
+else:
+    data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
+    data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
+    validated_data = pd.read_csv(args.input_validated_file, sep='\t')
+    validated_data=validated_data[['_gddid', 'sentid', 'validated_coordinates']]
+    data = pd.concat([data_train, data_test])
+
+
+    data=pd.merge(data, validated_data,  how='left', left_on=['_gddid','sentid'], right_on = ['_gddid','sentid'])
+    data=data.fillna('revise')
+    data['validated_coordinates'] = data['validated_coordinates'].astype(str)
+    data=data.reset_index()
 
 # GDDID dropdown
 gddid_list = list(data['title'].unique())
@@ -29,9 +63,21 @@ sent_opt_list = []
 for i in sentid_list:
     sent_opt_list.append({'label':i, 'value':i})
 
+
+# Dataframe 0 or 1
+if args.input_validated_file==in_file_name:
+    marking_df = pd.DataFrame(OrderedDict([('coords_or_not', ['0', '1', 'revise'])]))
+    validated_opt_list = [{'label': i, 'value': i} for i in marking_df['coords_or_not'].unique()]
+
+else:
+    validated_list = list(data['validated_coordinates'].unique())
+    validated_opt_list = []
+    for i in validated_list:
+        validated_opt_list.append({'label':i, 'value':i})
+
 # Data Generator
 def datagen(data = data):
-    data=data[['title', '_gddid', 'sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
+    data=data[['title', '_gddid', 'sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test', 'validated_coordinates']]
     return(data)
 
 # Figure generator for first graph
@@ -48,18 +94,17 @@ def fig_generator(sample_data):
     fig = go.Figure(layout=plot_layout)
     fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['prediction_proba'], mode='markers', name='proba'))
     fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['original_label'], mode='markers', name='original label'))
+    fig.add_trace(go.Scatter(x=sample_data['sentid'], y=sample_data['validated_coordinates'], mode='markers', name='validated label'))
     fig.update_layout(yaxis=dict(range=[0,1.02]))
     fig.update_layout(xaxis=dict(range=[0,1000]))
     return(fig.data, fig.layout)
 
 
-
 def table_generator(data):
     data.reset_index(drop=True)
     data=sample_data.sort_values(by='sentid')
-    data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long']]
+    data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'validated_coordinates']]
     return data.to_json()
-
 
 # Dash application
 app = dash.Dash()
@@ -69,8 +114,9 @@ app.layout = html.Div(children=[html.H1('Record Mining Dashboard'),
                                 html.Div(children=[html.P('Choose a paper:'),
                                                    dcc.Dropdown(id="title_dropdown",
                                                                 options=options_list,
-                                                                value='Paradigms and proboscideans in the southern Great Lakes region, USA')]),
-                                                   html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'}),
+                                                                value='Paradigms and proboscideans in the southern Great Lakes region, USA'),
+                                                    ]),
+                                html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'}),
 
                                 dcc.Tabs(id='tabs-example', value='tab-1', children=[
                                                                                      dcc.Tab(label='Graphics', value='tab-1'),
@@ -104,7 +150,6 @@ def update_output(input_title):
     return 'The GDDID for that title is: \n{}'.format(gdd)
 
 # Table
-
 @app.callback(Output('json_df_store', 'children'),
               [Input('title_dropdown', 'value'),
                Input('sentid_dropdown', 'value')])
@@ -114,7 +159,7 @@ def load_table(input_title, input_sentid):
         data= datagen()
         data.reset_index(inplace=True)
         data=data[data['title'] == input_title]
-        data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test']]
+        data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test','validated_coordinates']]
         a=data[data['sentid'] == int(input_sentid)-1]
         b=data[data['sentid'] == int(input_sentid)]
         c=data[data['sentid'] == int(input_sentid)+1]
@@ -150,9 +195,7 @@ def update_output(json_df):
                           )])
     return child
 
-
 # Table2
-
 @app.callback(Output('json_df_store_t2', 'children'),
               [Input('title_dropdown', 'value')])
 def load_table_t2(input_title):
@@ -161,7 +204,7 @@ def load_table_t2(input_title):
     data.reset_index(inplace=True)
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
-    data=data[['sentid','sentence', 'prediction_proba', 'predicted_label','coordinates(y/n)']]
+    data=data[['_gddid','sentid','sentence', 'prediction_proba', 'predicted_label','validated_coordinates']]
     data=data.sort_values(by='sentid')
 
     data=data.to_json()
@@ -190,8 +233,12 @@ def update_output_t2(json_df_t2):
                                    {'name': 'sentence', 'id': 'sentence', 'editable':False},
                                    {'name': 'prediction_proba', 'id': 'prediction_proba', 'editable':False},
                                    {'name': 'predicted_label', 'id': 'predicted_label', 'editable':False},
-                                   {'name': 'coordinates(y/n)','id': 'coordinates(y/n)', 'editable': True}],
-                          sort_action='native',
+                                   {'name': 'validated_coordinates','id': 'validated_coordinates', 'presentation':'dropdown', 'editable':True}],
+
+                          dropdown={'validated_coordinates':{
+                                                   'options': validated_opt_list
+                                                   }},
+            sort_action='native',
                           filter_action='native',
                           style_cell={'width': '50px',
                                       'height': '30px',
@@ -210,20 +257,37 @@ def update_output_t2(json_df_t2):
         )
 
 def selected_data_to_csv(nclicks,table1):
+    t = time.localtime()
+    timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
+    gdd_name = ('Output_'+timestamp+'.tsv')
+    path = r'src/output/from_dashboard'
+
+    output_file = os.path.join(path,gdd_name)
+
+    list_of_files = glob.glob('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/from_dashboard/*.tsv') # * means all if need specific format then *.csv
+    input_file = max(list_of_files, key=os.path.getmtime)
 
     if nclicks == 0:
         raise PreventUpdate
     else:
-        #gdd_name=''
-        #gdd_name = gddid_output
-        #print(gdd_name)
+        table1=pd.DataFrame(table1)
+        table1['timestamp']=timestamp
+        table1=table1[['_gddid','sentid', 'prediction_proba', 'predicted_label', 'validated_coordinates', 'timestamp']]
+        table1['timestamp']=timestamp
 
-        #gdd_name = gdd_name.append('.tsv')
-        gdd_name = 'file.tsv'
-        path = r'src/output/from_dashboard'
-        output_file = os.path.join(path,gdd_name)
+        criteria = table1['validated_coordinates'].isin(['0.0', '1.0'])
+        table2=table1.loc[criteria]
+        #table2= (table1[table1['validated_coordinates'] == '0.0'] or table1[table1['validated_coordinates'] == '0.0'])
+        #sample_data=sample_data.loc[(sample_data['prediction_proba']>0.02) | (sample_data['original_label']>0.02)]
+        #table1=table1[table1.validated_coordinates.notnull()]
+        #table1=table1.rename(columns={'coordinates':'validated_coordinates'})
+        #table1.to_csv(output_file, sep='\t', index = False)
 
-        pd.DataFrame(table1).to_csv(output_file, sep='\t', index = False)
+        older_data=pd.read_csv(input_file, sep='\t')
+        older_data.columns=table2.columns
+        new_data=pd.concat([table2, older_data])
+        new_data.to_csv(output_file, sep='\t', mode='a+',header=True, index=False)
+
         return "Data Submitted"
 
 
@@ -254,7 +318,6 @@ def render_content(tab):
                                   html.Div(id='json_df_store_t2', style={'display':'none'}),
                                   html.Div(id='table_output_t2')
                                   ])
-
 
 
 if __name__ == '__main__':
