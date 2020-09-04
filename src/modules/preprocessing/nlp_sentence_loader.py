@@ -13,7 +13,7 @@ import config as config
 
 # Connect to PostgreSQL server from terminal:
 # pg_ctl -D PSQL_Data -l logfile start
-def preprocessed_sentences_sql(query='''SELECT * FROM sentences;'''):
+def preprocessed_sentences_sql(query='''SELECT * FROM sentences2;'''):
     """
     Loads and formats NLP sentences SQL file and converts to a dataframe
 
