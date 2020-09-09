@@ -3,7 +3,9 @@
 
 #data
 bibjson
+bibjson2
 data-1590729612420.csv
+data/sentences_nlp3522
 
 # pychache
 __pycache__/
@@ -39,3 +41,9 @@ src/modules/preprocessing/database.ini
 src/output/bibliography.csv
 src/output/nlp_sentences_df.csv
 *.tsv
+
+#need to revise
+:UnacquiredSites
+Untitled.ipynb
+src/main.py
+trial.ipynb
