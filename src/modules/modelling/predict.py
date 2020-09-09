@@ -55,21 +55,18 @@ def main():
     y_pred, y_proba = predict(data_test = nlp_bib)
 
     guessed_label = pd.DataFrame(y_pred)
-    guessed_label = guessed_label.rename({'0':'guessed_label'}, axis=1)
 
     predicted_proba = pd.DataFrame(y_proba)
-    predicted_proba = predicted_proba.rename({'0':'predicted_proba'}, axis=1)
 
     original_sentences = original_sentences.reset_index()
 
     test_pred_comp = pd.merge(guessed_label, predicted_proba, left_index=True, right_index=True)
 
-    #test_pred_comp = test_pred_comp.drop(columns=['index'])
-
     test_pred_comp = pd.merge(original_sentences, test_pred_comp, left_index=True, right_index=True)
-    test_pred_comp = test_pred_comp({'0_x':'guessed_label', '0_y':'predicted_proba'})
-    test_pred_comp = test_pred_comp.sort_values(by='predicted_proba')
-    print(test_pred_comp.head(2))
+    test_pred_comp = test_pred_comp.reset_index(drop=True)
+    test_pred_comp = test_pred_comp.rename(columns={'0_x':'guessed_label', '0_y':'predicted_proba'})
+
+    test_pred_comp = test_pred_comp[['sentid','words_as_string', 'link_url', 'guessed_label', 'predicted_proba', '_gddid', 'title']]
 
     output_file = os.path.join(args.output_file)
     test_pred_comp.to_csv(output_file, sep='\t', index = False)

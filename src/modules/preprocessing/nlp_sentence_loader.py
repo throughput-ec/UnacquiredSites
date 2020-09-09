@@ -75,4 +75,27 @@ def preprocessed_sentences_sql(query='''SELECT * FROM sentences2;'''):
 
     except Exception as e:
         print(e)
-        print('No SQL found. Try a different data source')
+        print('No SQL found. If you have a tsv file, try using preprocessed_sentences_tsv().')
+
+def preprocessed_sentences_tsv(path = file):
+    header_list = ["_gddid", "sentid", "wordidx", "words", "part_of_speech", "special_class",
+               "lemmas", "word_type", "word_modified"]
+    nlp_sentences = pd.read_csv(path, sep='\t', names = header_list)
+    nlp_sentences = nlp_sentences[['_gddid', 'sentid', 'words']]
+    nlp_sentences = nlp_sentences.replace('"', '', regex = True)\
+                                 .replace('\{', '', regex = True)\
+                                 .replace('}', '', regex = True)\
+                                 .replace(',', ',', regex = True)\
+                                 .replace(r'\W{4,}', '', regex=True)\
+                                 .replace(',,,', 'comma_sym', regex=True)\
+                                 .replace(',', ' ', regex=True)\
+                                 .replace('comma_sym', ', ', regex=True)\
+                                 .replace('-LRB- ', '(', regex=True)\
+                                 .replace('LRB', '(', regex=True)\
+                                 .replace(' -RRB-', r')', regex=True)\
+                                 .replace('RRB', r')', regex=True)\
+                                 .replace('-RRB', r')', regex=True)
+    nlp_sentences['words']= nlp_sentences['words'].str.split(",")
+    # Sentences - not words.
+    nlp_sentences = convert_words_to_string(nlp_sentences, col_to_convert = 'words', new_col_name = 'words_as_string')
+    return nlp_sentences
