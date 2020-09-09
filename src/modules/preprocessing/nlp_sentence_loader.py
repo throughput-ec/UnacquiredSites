@@ -77,6 +77,7 @@ def preprocessed_sentences_sql(query='''SELECT * FROM sentences2;'''):
         print(e)
         print('No SQL found. If you have a tsv file, try using preprocessed_sentences_tsv().')
 
+file = r'data/sentences_nlp3522'
 def preprocessed_sentences_tsv(path = file):
     header_list = ["_gddid", "sentid", "wordidx", "words", "part_of_speech", "special_class",
                "lemmas", "word_type", "word_modified"]
