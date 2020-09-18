@@ -27,8 +27,8 @@ path = r'src/output/for_model'
 file = r'src/output/for_model/preprocessed_sentences.tsv'
 bib_file = r'data/bibjson'
 neotoma_file = r'data/data-1590729612420.csv'
-nlp_file=r'data/sentences_nlp3522'
-tsv_or_sql = 'sql'
+nlp_file=r'data/sentences_nlp352'
+tsv_or_sql = 'tsv'
 
 
 def main():
@@ -48,7 +48,7 @@ def main():
     parser.add_argument('--create_eda', type=str, default='no',
                         help='Use train model or no. Options: yes/no')
 
-    parser.add_argument('--tsv_or_sql', type=str, default='sql',
+    parser.add_argument('--tsv_or_sql', type=str, default='tsv',
                         help='Use a sql base or csv base')
     args = parser.parse_args()
 
@@ -58,9 +58,14 @@ def main():
                                                                                neotoma_path=args.neotoma_file,
                                                                                nlp_path=args.nlp_file,
                                                                                tsv_or_sql=args.tsv_or_sql)
+
+
     nlp_bib, nlp_bib_neotoma = get_nlp_bib_neotoma(nlp_sentences,
                                                    bibliography,
                                                    neotoma_joined_df)
+
+    print('nlp_bib:\n', nlp_bib.head(2))
+    print('nlp_bib_neotoma:\n', nlp_bib_neotoma.head(2))
 
     print("...preprocessing data... please wait...")
 
@@ -90,6 +95,8 @@ def main():
                                                  'longeast',
                                                  'found_sites']]
 
+
+
     output_file = os.path.join(args.output_name)
     nlp_bib_neotoma_for_model.to_csv(output_file, sep='\t', index=False)
 
@@ -108,7 +115,7 @@ def main():
 
 
 
-def get_all_datasets(nlp_path=nlp_file, bib_path=bib_file, neotoma_path=neotoma_file, tsv_or_sql='sql'):
+def get_all_datasets(nlp_path=nlp_file, bib_path=bib_file, neotoma_path=neotoma_file, tsv_or_sql='tsv'):
     """
     Runs all data creator functions to get four main datasets
 
@@ -130,7 +137,9 @@ def get_all_datasets(nlp_path=nlp_file, bib_path=bib_file, neotoma_path=neotoma_
     if tsv_or_sql=='sql':
         nlp_sentences = sentence_loader.preprocessed_sentences_sql()
     if tsv_or_sql=='tsv':
+        print("loading from tsv file")
         nlp_sentences = sentence_loader.preprocessed_sentences_tsv(path=nlp_path)
+
     bibliography = bib_loader.preprocessed_bibliography(path=bib_path)
     neotoma = nl.neotoma_loader(file=neotoma_path)
     neotoma_joined_df = nl.grouped_coords_df(neotoma)
