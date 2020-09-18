@@ -13,22 +13,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install scikit-learn
-#RUN pip3 install sklearn.model_selection
-#RUN pip3 install sklearn.feature_extraction.text
 
 RUN pip3 install nltk
-#RUN pip3 install nltk.tokenize
-#RUN pip3 install nltk.corpus
-
-#RUN pip3 install time
-#RUN pip3 install pickle
 
 RUN pip3 install argparse
-#RUN pip3 install sys
-#RUN pip3 install cProfile
-#RUN pip3 install pstats
-#RUN pip3 install io
-
 
 RUN pip3 install plotly
 RUN pip3 install dash
@@ -38,3 +26,15 @@ RUN pip3 install dash_html_components
 RUN pip3 install dash_core_components
 RUN pip3 install dash_table
 RUN pip3 install dash
+
+COPY src/modules /app
+RUN ls -alp /app
+
+COPY output /app/output
+CMD ["python3", "/app/dashboard/record_mining_dashboard.py"]
+
+# how to build docker image
+# docker build . -t my_first_xdd_app
+
+# how to run image
+# docker run -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output:/app/(maybedashboard)/output -p 8050:8050 my_first_xdd_app:latest

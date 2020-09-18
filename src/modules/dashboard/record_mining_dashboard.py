@@ -32,14 +32,14 @@ parser.add_argument('--input_validated_file', type=str, default=in_file_name,
 args = parser.parse_args()
 
 if args.input_validated_file==in_file_name:
-    data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
-    data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
+    data_test = pd.read_csv('output/predictions/comparison_file.tsv', sep='\t')
+    data_train = pd.read_csv('output/predictions/dashboard_file.tsv', sep='\t')
     data = pd.concat([data_train, data_test])
     data['validated_coordinates']='revise'
 
 else:
-    data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
-    data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
+    data_test = pd.read_csv('output/predictions/comparison_file.tsv', sep='\t')
+    data_train = pd.read_csv('output/predictions/dashboard_file.tsv', sep='\t')
     validated_data = pd.read_csv(args.input_validated_file, sep='\t')
     validated_data=validated_data[['_gddid', 'sentid', 'validated_coordinates']]
     data = pd.concat([data_train, data_test])
