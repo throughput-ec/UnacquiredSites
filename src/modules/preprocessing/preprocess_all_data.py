@@ -18,13 +18,12 @@ import io
 
 # USAGE
 # python3 src/preprocess_all_data.py \
-# --output_name='src/output/for_model/preprocessed_sentences.tsv' \
+# --output_name='output/for_model/preprocessed_sentences.tsv' \
 # --bib_file='data/bibjson' \
 # --neotoma_file='data/data-1590729612420.csv' \
 # --create_eda='yes'
 
-path = r'src/output/for_model'
-file = r'src/output/for_model/preprocessed_sentences.tsv'
+file = r'output/for_model/preprocessed_sentences.tsv'
 bib_file = r'data/bibjson'
 neotoma_file = r'data/data-1590729612420.csv'
 nlp_file=r'data/sentences_nlp352'
@@ -63,9 +62,6 @@ def main():
     nlp_bib, nlp_bib_neotoma = get_nlp_bib_neotoma(nlp_sentences,
                                                    bibliography,
                                                    neotoma_joined_df)
-
-    print('nlp_bib:\n', nlp_bib.head(2))
-    print('nlp_bib_neotoma:\n', nlp_bib_neotoma.head(2))
 
     print("...preprocessing data... please wait...")
 
