@@ -124,6 +124,21 @@ def main():
     train_pred_comp.to_csv(output_file2, sep='\t', index = False)
     print(f"Saving train labels - comparison dataframe for dashboard in: {output_file2}")
 
+
+    ## Getting a df with percentiles. Uncomment if you want to get this df again
+    '''
+    train_pred_comp_percentiles = pd.DataFrame(train_pred_comp['prediction_proba'])
+    test_pred_comp_percentiles = pd.DataFrame(test_pred_comp['prediction_proba'])
+    dataf = pd.concat([train_pred_comp_percentiles, test_pred_comp_percentiles])
+    dataf['prediction_proba'] = dataf['prediction_proba'].astype(str)
+    dataf['count'] = 1
+
+    df = dataf.groupby(['prediction_proba'], as_index=False)['count'].count()
+    df['percentage'] = (df['count']/106640)*100
+    df = pd.DataFrame(df)
+    df.to_csv(r'src/output/eda/comparison_percentiles.tsv', sep='\t', index = False)
+    '''
+
 def prepare_data(file = in_file_name, validation_file = validation_file):
     input_file = file
 
@@ -173,11 +188,17 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
         X_test = vec.transform(data_test['words_as_string'].fillna(' '))
         y_test = data_test['has_both_lat_long_int']
 
+        filename = 'src/output/count_vec_model.sav'
+        pickle.dump(vec, open(filename, 'wb'))
+
         return X_train, y_train, X_test, y_test, data_test, data_train
 
     else:
         X_train = vec.fit_transform(data_train['words_as_string'].fillna(' '))
         y_train = data_train['validated_coordinates']
+
+        filename = 'src/output/count_vec_model.sav'
+        pickle.dump(vec, open(filename, 'wb'))
 
         # Transform test data without fitting
         X_test = vec.transform(data_test['words_as_string'].fillna(' '))

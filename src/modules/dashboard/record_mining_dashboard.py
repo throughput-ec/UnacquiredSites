@@ -202,6 +202,7 @@ def load_table_t2(input_title):
     data =''
     data= datagen()
     data.reset_index(inplace=True)
+    data = data[data['prediction_proba'] > 0.006]
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
     data=data[['_gddid','sentid','sentence', 'prediction_proba', 'predicted_label','validated_coordinates']]

@@ -27,6 +27,8 @@ path = r'src/output/for_model'
 file = r'src/output/for_model/preprocessed_sentences.tsv'
 bib_file = r'data/bibjson'
 neotoma_file = r'data/data-1590729612420.csv'
+nlp_file=r'data/sentences_nlp3522'
+tsv_or_sql = 'sql'
 
 
 def main():
@@ -38,14 +40,24 @@ def main():
                         help='Directory where bibliography json file is.')
     parser.add_argument('--neotoma_file', type=str, default=neotoma_file,
                         help='Directory with Neotmas CSV.')
+
+    parser.add_argument('--nlp_file', type=str, default=nlp_file,
+                        help='Directory with NLP CSV')
+
+
     parser.add_argument('--create_eda', type=str, default='no',
                         help='Use train model or no. Options: yes/no')
+
+    parser.add_argument('--tsv_or_sql', type=str, default='sql',
+                        help='Use a sql base or csv base')
     args = parser.parse_args()
 
     print("Loading all datasets")
 
     nlp_sentences, bibliography, neotoma, neotoma_joined_df = get_all_datasets(bib_path=args.bib_file,
-                                                                               neotoma_path=args.neotoma_file)
+                                                                               neotoma_path=args.neotoma_file,
+                                                                               nlp_path=args.nlp_file,
+                                                                               tsv_or_sql=args.tsv_or_sql)
     nlp_bib, nlp_bib_neotoma = get_nlp_bib_neotoma(nlp_sentences,
                                                    bibliography,
                                                    neotoma_joined_df)
@@ -96,7 +108,7 @@ def main():
 
 
 
-def get_all_datasets(bib_path=bib_file, neotoma_path=neotoma_file):
+def get_all_datasets(nlp_path=nlp_file, bib_path=bib_file, neotoma_path=neotoma_file, tsv_or_sql='sql'):
     """
     Runs all data creator functions to get four main datasets
 
@@ -114,7 +126,11 @@ def get_all_datasets(bib_path=bib_file, neotoma_path=neotoma_file):
     neotoma_joined_df : pd.DataFrame
         pd.DataFrame with all Neotoma_Joined_DF database information
     """
-    nlp_sentences = sentence_loader.preprocessed_sentences_sql()
+
+    if tsv_or_sql=='sql':
+        nlp_sentences = sentence_loader.preprocessed_sentences_sql()
+    if tsv_or_sql=='tsv':
+        nlp_sentences = sentence_loader.preprocessed_sentences_tsv(path=nlp_path)
     bibliography = bib_loader.preprocessed_bibliography(path=bib_path)
     neotoma = nl.neotoma_loader(file=neotoma_path)
     neotoma_joined_df = nl.grouped_coords_df(neotoma)
