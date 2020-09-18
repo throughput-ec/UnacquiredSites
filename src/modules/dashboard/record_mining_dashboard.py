@@ -18,7 +18,7 @@ from collections import OrderedDict
 import argparse
 
 ## How To run From Console
-# python3 src/modules/dashboard/record_mining_dashboard.py --input_validated_file='src/output/from_dashboard/Output_Aug_20_2020_174852.tsv'
+# python3 src/modules/dashboard/record_mining_dashboard.py --input_validated_file='output/from_dashboard/Output_Aug_20_2020_174852.tsv'
 # If no file is chosen, it will use raw data
 
 in_file_name = r''
@@ -261,11 +261,11 @@ def selected_data_to_csv(nclicks,table1):
     t = time.localtime()
     timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
     gdd_name = ('Output_'+timestamp+'.tsv')
-    path = r'src/output/from_dashboard'
+    path = r'output/from_dashboard'
 
     output_file = os.path.join(path,gdd_name)
 
-    list_of_files = glob.glob('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/from_dashboard/*.tsv') # * means all if need specific format then *.csv
+    list_of_files = glob.glob('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output/from_dashboard/*.tsv') # * means all if need specific format then *.csv
     input_file = max(list_of_files, key=os.path.getmtime)
 
     if nclicks == 0:
