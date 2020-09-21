@@ -42,4 +42,4 @@ CMD ["python3", "/app/dashboard/record_mining_dashboard.py"]
 # docker build . -t my_first_xdd_app
 
 # how to run image
-# docker run -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/input:/app/input -p 8050:8050 my_first_xdd_app:latest bash
+# docker run -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output:/app/input -p 8050:8050 my_first_xdd_app:latest bash
