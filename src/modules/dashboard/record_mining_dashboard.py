@@ -265,7 +265,7 @@ def selected_data_to_csv(nclicks,table1):
 
     output_file = os.path.join(path,gdd_name)
 
-    list_of_files = glob.glob('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output/from_dashboard/*.tsv') # * means all if need specific format then *.csv
+    list_of_files = glob.glob('UnacquiredSites/output/from_dashboard/*.tsv') # * means all if need specific format then *.csv
     input_file = max(list_of_files, key=os.path.getmtime)
 
     if nclicks == 0:
@@ -322,4 +322,8 @@ def render_content(tab):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(
+        port=8050,
+        host='0.0.0.0'
+    )
+    #app.run_server(debug=True)
