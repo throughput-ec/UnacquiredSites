@@ -18,7 +18,7 @@ from collections import OrderedDict
 import argparse
 
 ## How To run From Console
-# python3 src/modules/dashboard/record_mining_dashboard.py --input_validated_file='src/output/from_dashboard/Output_Aug_20_2020_174852.tsv'
+# python3 src/modules/dashboard/record_mining_dashboard.py --input_validated_file='output/from_dashboard/Output_Aug_20_2020_174852.tsv'
 # If no file is chosen, it will use raw data
 
 in_file_name = r''
@@ -32,14 +32,14 @@ parser.add_argument('--input_validated_file', type=str, default=in_file_name,
 args = parser.parse_args()
 
 if args.input_validated_file==in_file_name:
-    data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
-    data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
+    data_test = pd.read_csv('output/predictions/comparison_file.tsv', sep='\t')
+    data_train = pd.read_csv('output/predictions/dashboard_file.tsv', sep='\t')
     data = pd.concat([data_train, data_test])
     data['validated_coordinates']='revise'
 
 else:
-    data_test = pd.read_csv('src/output/predictions/comparison_file.tsv', sep='\t')
-    data_train = pd.read_csv('src/output/predictions/dashboard_file.tsv', sep='\t')
+    data_test = pd.read_csv('output/predictions/comparison_file.tsv', sep='\t')
+    data_train = pd.read_csv('output/predictions/dashboard_file.tsv', sep='\t')
     validated_data = pd.read_csv(args.input_validated_file, sep='\t')
     validated_data=validated_data[['_gddid', 'sentid', 'validated_coordinates']]
     data = pd.concat([data_train, data_test])
@@ -234,7 +234,8 @@ def update_output_t2(json_df_t2):
                                    {'name': 'sentence', 'id': 'sentence', 'editable':False},
                                    {'name': 'prediction_proba', 'id': 'prediction_proba', 'editable':False},
                                    {'name': 'predicted_label', 'id': 'predicted_label', 'editable':False},
-                                   {'name': 'validated_coordinates','id': 'validated_coordinates', 'presentation':'dropdown', 'editable':True}],
+                                   {'name': 'validated_coordinates','id': 'validated_coordinates', 'presentation':'dropdown', 'editable':True},
+                                   {'name': 'found_coordinates','id': 'found_coordinates', 'editable':True}],
 
                           dropdown={'validated_coordinates':{
                                                    'options': validated_opt_list
@@ -261,33 +262,21 @@ def selected_data_to_csv(nclicks,table1):
     t = time.localtime()
     timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
     gdd_name = ('Output_'+timestamp+'.tsv')
-    path = r'src/output/from_dashboard'
+    path = r'output/from_dashboard'
 
     output_file = os.path.join(path,gdd_name)
-
-    list_of_files = glob.glob('/Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/src/output/from_dashboard/*.tsv') # * means all if need specific format then *.csv
-    input_file = max(list_of_files, key=os.path.getmtime)
 
     if nclicks == 0:
         raise PreventUpdate
     else:
         table1=pd.DataFrame(table1)
         table1['timestamp']=timestamp
-        table1=table1[['_gddid','sentid', 'prediction_proba', 'predicted_label', 'validated_coordinates', 'timestamp']]
+        table1=table1[['_gddid','sentid', 'prediction_proba', 'predicted_label', 'validated_coordinates', 'found_coordinates', 'timestamp']]
         table1['timestamp']=timestamp
 
-        criteria = table1['validated_coordinates'].isin(['0.0', '1.0'])
-        table2=table1.loc[criteria]
-        #table2= (table1[table1['validated_coordinates'] == '0.0'] or table1[table1['validated_coordinates'] == '0.0'])
-        #sample_data=sample_data.loc[(sample_data['prediction_proba']>0.02) | (sample_data['original_label']>0.02)]
-        #table1=table1[table1.validated_coordinates.notnull()]
-        #table1=table1.rename(columns={'coordinates':'validated_coordinates'})
-        #table1.to_csv(output_file, sep='\t', index = False)
+        table2=table1.loc[table1['validated_coordinates'] != 'revise']
 
-        older_data=pd.read_csv(input_file, sep='\t')
-        older_data.columns=table2.columns
-        new_data=pd.concat([table2, older_data])
-        new_data.to_csv(output_file, sep='\t', mode='a+',header=True, index=False)
+        table2.to_csv(output_file, sep='\t', mode='a+',header=True, index=False)
 
         return "Data Submitted"
 
@@ -322,4 +311,8 @@ def render_content(tab):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(
+        port=8050,
+        host='0.0.0.0'
+    )
+    #app.run_server(debug=True)

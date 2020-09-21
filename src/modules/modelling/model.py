@@ -22,16 +22,16 @@ import cProfile, pstats, io
 
 ## USAGE
 ## python3 src/modules/modelling/model.py \
-## --input_file = 'src/output/for_model/preprocessed_sentences.tsv' \
-## --trained_model='yes' --validation_file='src/output/from_dashboard/last_validated.tsv'
+## --input_file = 'output/for_model/preprocessed_sentences.tsv' \
+## --trained_model='yes' --validation_file='output/from_dashboard/last_validated.tsv'
 
-in_file_name = r'src/output/for_model/preprocessed_sentences.tsv'
+in_file_name = r'output/for_model/preprocessed_sentences.tsv'
 
 validation_file = r''
 
-out_file_name = r'src/output/predictions/comparison_file.tsv'
+out_file_name = r'output/predictions/comparison_file.tsv'
 
-out_dashboard_file_name = r'src/output/predictions/dashboard_file.tsv'
+out_dashboard_file_name = r'output/predictions/dashboard_file.tsv'
 
 def main():
     parser = argparse.ArgumentParser()
@@ -136,7 +136,7 @@ def main():
     df = dataf.groupby(['prediction_proba'], as_index=False)['count'].count()
     df['percentage'] = (df['count']/106640)*100
     df = pd.DataFrame(df)
-    df.to_csv(r'src/output/eda/comparison_percentiles.tsv', sep='\t', index = False)
+    df.to_csv(r'output/eda/comparison_percentiles.tsv', sep='\t', index = False)
     '''
 
 def prepare_data(file = in_file_name, validation_file = validation_file):
@@ -188,7 +188,7 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
         X_test = vec.transform(data_test['words_as_string'].fillna(' '))
         y_test = data_test['has_both_lat_long_int']
 
-        filename = 'src/output/count_vec_model.sav'
+        filename = 'output/count_vec_model.sav'
         pickle.dump(vec, open(filename, 'wb'))
 
         return X_train, y_train, X_test, y_test, data_test, data_train
@@ -197,7 +197,7 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
         X_train = vec.fit_transform(data_train['words_as_string'].fillna(' '))
         y_train = data_train['validated_coordinates']
 
-        filename = 'src/output/count_vec_model.sav'
+        filename = 'output/count_vec_model.sav'
         pickle.dump(vec, open(filename, 'wb'))
 
         # Transform test data without fitting
@@ -213,14 +213,14 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
 def train(X_train, y_train):
     clf = DecisionTreeClassifier(min_samples_split = 40, max_depth = 12)
     clf.fit(X_train, y_train)
-    filename = 'src/output/finalized_model.sav'
+    filename = 'output/finalized_model.sav'
     pickle.dump(clf, open(filename, 'wb'))
     return clf
 
 
 def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
     if trained_model == 'yes':
-        loaded_model = pickle.load(open('src/output/finalized_model.sav', 'rb'))
+        loaded_model = pickle.load(open('output/finalized_model.sav', 'rb'))
         training_acc = loaded_model.score(X_train, y_train)
         print(f"This model's training accuracy was of: {training_acc:.5f}")
         result = loaded_model.score(X_test, y_test)
@@ -243,7 +243,7 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
 
 def predict_proba_train(X_train, y_train, trained_model = 'yes'):
     if trained_model == 'yes':
-        loaded_model = pickle.load(open('src/output/finalized_model.sav', 'rb'))
+        loaded_model = pickle.load(open('output/finalized_model.sav', 'rb'))
         y_train_pred = loaded_model.predict(X_train)
         y_train_proba = loaded_model.predict_proba(X_train)[:,1]
         return y_train_pred, y_train_proba
@@ -264,7 +264,7 @@ def predict_proba_train(X_train, y_train, trained_model = 'yes'):
 #ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
 #ps.print_stats()
 
-#with open('src/output/profiling/profiling_model.txt', 'w+') as f:
+#with open('output/profiling/profiling_model.txt', 'w+') as f:
 #    f.write(s.getvalue())
 
 if __name__ == '__main__':

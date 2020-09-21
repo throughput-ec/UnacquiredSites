@@ -47,3 +47,6 @@ src/output/nlp_sentences_df.csv
 Untitled.ipynb
 src/main.py
 trial.ipynb
+
+.dockerignore
+sentences_nlp352

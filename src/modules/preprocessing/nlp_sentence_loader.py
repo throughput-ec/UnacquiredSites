@@ -78,6 +78,7 @@ def preprocessed_sentences_sql(query='''SELECT * FROM sentences2;'''):
         print('No SQL found. If you have a tsv file, try using preprocessed_sentences_tsv().')
 
 file = r'data/sentences_nlp3522'
+
 def preprocessed_sentences_tsv(path = file):
     header_list = ["_gddid", "sentid", "wordidx", "words", "part_of_speech", "special_class",
                "lemmas", "word_type", "word_modified"]
@@ -98,5 +99,17 @@ def preprocessed_sentences_tsv(path = file):
                                  .replace('-RRB', r')', regex=True)
     nlp_sentences['words']= nlp_sentences['words'].str.split(",")
     # Sentences - not words.
-    nlp_sentences = convert_words_to_string(nlp_sentences, col_to_convert = 'words', new_col_name = 'words_as_string')
+    nlp_sentences = ard.convert_words_to_string(nlp_sentences, col_to_convert = 'words', new_col_name = 'words_as_string')
+
+    # REGEX Values
+    nlp_sentences = ard.find_re(nlp_sentences, find_val = 'dms_regex',\
+                                search_col = 'words_as_string', new_col_name = 'dms_regex')
+    nlp_sentences = ard.find_re(nlp_sentences, find_val = 'dd_regex',\
+                                search_col = 'words_as_string', new_col_name = 'dd_regex')
+    nlp_sentences = ard.find_re(nlp_sentences, find_val = 'digits_regex',\
+                                search_col = 'words_as_string', new_col_name = 'digits_regex')
+    # Format words to lowercase
+    nlp_sentences['words_l'] = nlp_sentences['words']\
+                                .astype(str).str.lower().transform(ast.literal_eval)
+
     return nlp_sentences

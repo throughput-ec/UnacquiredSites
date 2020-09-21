@@ -29,11 +29,11 @@ import cProfile, pstats, io
 ## python3 src/modules/modelling/predict.py \
 ## --input_name = 'data/sentences_nlp3522' \
 ## --bib_file = 'data/bibjson2' \
-## --output_file='src/output/predictions/predicted_labels_new_data.tsv'
+## --output_file='output/predictions/predicted_labels_new_data.tsv'
 
 file = r'data/sentences_nlp3522'
 bib_file = r'data/bibjson2'
-out_file_name = r'src/output/predictions/predicted_labels_new_data.tsv'
+out_file_name = r'output/predictions/predicted_labels_new_data.tsv'
 
 def main():
     parser = argparse.ArgumentParser()
@@ -47,7 +47,7 @@ def main():
 
     args = parser.parse_args()
 
-    nlp_sentences = preprocessed_sentences_csv(args.input_name)
+    nlp_sentences = preprocessed_sentences_tsv(args.input_name)
     bibliography = bibliography_loader(args.bib_file)
     nlp_bib = nlp_sentences.merge(bibliography, on='_gddid')
     original_sentences = nlp_bib[['_gddid', 'title', 'sentid','words_as_string', 'link_url']]
@@ -160,7 +160,7 @@ def bibliography_loader(path):
 
     return bibliography
 
-def preprocessed_sentences_csv(path = file):
+def preprocessed_sentences_tsv(path = file):
     header_list = ["_gddid", "sentid", "wordidx", "words", "part_of_speech", "special_class",
                "lemmas", "word_type", "word_modified"]
     nlp_sentences = pd.read_csv(path, sep='\t', names = header_list)
@@ -185,9 +185,9 @@ def preprocessed_sentences_csv(path = file):
 
 
 def predict(data_test):
-    vec = pickle.load(open('src/output/count_vec_model.sav', 'rb'))
+    vec = pickle.load(open('output/count_vec_model.sav', 'rb'))
     X_test = vec.transform(data_test['words_as_string'].fillna(' '))
-    loaded_model = pickle.load(open('src/output/finalized_model.sav', 'rb'))
+    loaded_model = pickle.load(open('output/finalized_model.sav', 'rb'))
     y_pred = loaded_model.predict(X_test)
     y_proba = loaded_model.predict_proba(X_test)[:,1]
     return y_pred, y_proba
