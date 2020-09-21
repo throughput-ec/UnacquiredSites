@@ -30,16 +30,17 @@ RUN pip3 install dash
 COPY src/modules /app
 RUN ls -alp /app
 
-COPY input /app/input
+COPY output/predictions /app/input
 
 WORKDIR /app
 COPY . /app
 
-
 CMD ["python3", "/app/dashboard/record_mining_dashboard.py"]
 
+COPY output/from_dashboard /app/output
+
 # how to build docker image
-# docker build . -t my_first_xdd_app
+# docker build . -t my_third_xdd_app
 
 # how to run image
-# docker run -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output:/app/input -p 8050:8050 my_first_xdd_app:latest bash
+# docker run -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output/predictions:/app/input -p 8050:8050 my_third_xdd_app:latest
