@@ -14,6 +14,9 @@ from dash.dependencies import State, Input, Output
 from dash.exceptions import PreventUpdate
 import time, os, fnmatch, shutil
 from collections import OrderedDict
+from dash_extensions import Download
+from dash_extensions.snippets import send_bytes
+
 
 import argparse
 
@@ -22,6 +25,8 @@ import argparse
 # If no file is chosen, it will use raw data
 
 in_file_name = r''
+output_path = r'output/from_dashboard'
+input_path=r'output/predictions'
 
 
 parser = argparse.ArgumentParser()
@@ -29,23 +34,37 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--input_validated_file', type=str, default=in_file_name,
                     help='Directory where your validated file is.')
 
+parser.add_argument('--input_path', type=str, default=input_path,
+                    help='Directory where your validated file is.')
+
+parser.add_argument('--output_path', type=str, default=output_path,
+                    help='Directory where your validated file is.')
+
 args = parser.parse_args()
 
 if args.input_validated_file==in_file_name:
-    data_test = pd.read_csv('output/predictions/comparison_file.tsv', sep='\t')
-    data_train = pd.read_csv('output/predictions/dashboard_file.tsv', sep='\t')
+    input_comp_file=os.path.join(args.input_path,'comparison_file.tsv')
+    input_dash_file=os.path.join(args.input_path,'dashboard_file.tsv')
+    data_test = pd.read_csv(input_comp_file, sep='\t')
+    data_train = pd.read_csv(input_dash_file, sep='\t')
     data = pd.concat([data_train, data_test])
     data['validated_coordinates']='revise'
+    data['found_coordinates']='write_the_coordinates'
+    data['found_coordinates']=data['found_coordinates'].astype(str)
 
 else:
-    data_test = pd.read_csv('output/predictions/comparison_file.tsv', sep='\t')
-    data_train = pd.read_csv('output/predictions/dashboard_file.tsv', sep='\t')
+    input_comp_file=os.path.join(args.input_path,'comparison_file.tsv')
+    input_dash_file=os.path.join(args.input_path,'dashboard_file.tsv')
+    data_test = pd.read_csv(input_comp_file, sep='\t')
+    data_train = pd.read_csv(input_dash_file, sep='\t')
     validated_data = pd.read_csv(args.input_validated_file, sep='\t')
     validated_data=validated_data[['_gddid', 'sentid', 'validated_coordinates']]
     data = pd.concat([data_train, data_test])
 
 
     data=pd.merge(data, validated_data,  how='left', left_on=['_gddid','sentid'], right_on = ['_gddid','sentid'])
+    data['found_coordinates']='write_the_coordinates'
+    data['found_coordinates']=data['found_coordinates'].astype(str)
     data=data.fillna('revise')
     data['validated_coordinates'] = data['validated_coordinates'].astype(str)
     data=data.reset_index()
@@ -77,7 +96,7 @@ else:
 
 # Data Generator
 def datagen(data = data):
-    data=data[['title', '_gddid', 'sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test', 'validated_coordinates']]
+    data=data[['title', '_gddid', 'sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'train/test', 'validated_coordinates', 'found_coordinates']]
     return(data)
 
 # Figure generator for first graph
@@ -103,7 +122,7 @@ def fig_generator(sample_data):
 def table_generator(data):
     data.reset_index(drop=True)
     data=sample_data.sort_values(by='sentid')
-    data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'validated_coordinates']]
+    data=data[['sentence', 'sentid', 'prediction_proba', 'original_label', 'predicted_label', 'found_lat', 'found_long', 'validated_coordinates', 'found_coordinates']]
     return data.to_json()
 
 # Dash application
@@ -205,7 +224,7 @@ def load_table_t2(input_title):
     data = data[data['prediction_proba'] > 0.006]
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
-    data=data[['_gddid','sentid','sentence', 'prediction_proba', 'predicted_label','validated_coordinates']]
+    data=data[['_gddid','sentid','sentence', 'prediction_proba', 'predicted_label','validated_coordinates', 'found_coordinates']]
     data=data.sort_values(by='sentid')
 
     data=data.to_json()
@@ -240,11 +259,13 @@ def update_output_t2(json_df_t2):
                           dropdown={'validated_coordinates':{
                                                    'options': validated_opt_list
                                                    }},
-            sort_action='native',
+                          sort_action='native',
                           filter_action='native',
                           style_cell={'width': '50px',
                                       'height': '30px',
                                       'textAlign': 'left'},
+                          export_format='csv',
+                          export_headers='display',
 
                           merge_duplicate_headers=True
                           )
@@ -258,11 +279,12 @@ def update_output_t2(json_df_t2):
         [State("table","data")]
         )
 
-def selected_data_to_csv(nclicks,table1):
+#def selected_data_to_csv(nclicks,table1, path = r'output/from_dashboard'):
+def selected_data_to_csv(nclicks,table1, path = args.output_path):
     t = time.localtime()
     timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
     gdd_name = ('Output_'+timestamp+'.tsv')
-    path = r'output/from_dashboard'
+    path = path
 
     output_file = os.path.join(path,gdd_name)
 
@@ -313,6 +335,6 @@ def render_content(tab):
 if __name__ == '__main__':
     app.run_server(
         port=8050,
-        host='0.0.0.0'
-    )
+        host='0.0.0.0')
+    #app.run_server(debug=True)
     #app.run_server(debug=True)
