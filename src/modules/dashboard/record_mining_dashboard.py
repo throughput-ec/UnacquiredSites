@@ -264,8 +264,7 @@ def update_output_t2(json_df_t2):
                           style_cell={'width': '50px',
                                       'height': '30px',
                                       'textAlign': 'left'},
-                          export_format='csv',
-                          export_headers='display',
+                          
 
                           merge_duplicate_headers=True
                           )
