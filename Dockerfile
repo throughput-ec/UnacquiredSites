@@ -37,7 +37,7 @@ COPY output/from_dashboard/ /app/output
 WORKDIR /app
 COPY . /app
 
-CMD ["python3", "/app/dashboard/record_mining_dashboard.py", "--input_path=/app/input/predictions", "--output_path=/app/output/from_dashboard"]
+CMD ["python3", "/app/dashboard/record_mining_dashboard.py", "--input_path=/app/output/predictions", "--output_path=/app/output/from_dashboard"]
 
 # how to build the docker image
 # docker build . -t my_first_xdd_app
