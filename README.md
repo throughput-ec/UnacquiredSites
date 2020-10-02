@@ -120,24 +120,22 @@ The current pipeline that is followed is:
 ### Instructions
 ##### Docker
 
-To run this analysis using Docker:
-
 1. Clone/download this repository
-2. Use the command line on your computer to get the [unacquiredsites](https://hub.docker.com/r/sedv8808/unacquiredsites) image from [DockerHub](https://hub.docker.com/):
+2. Use the command line on your computer to get the [unacquired_sites_app](https://hub.docker.com/r/sedv8808/unacquired_sites_app) image from [DockerHub](https://hub.docker.com/):
 ```
-docker pull sedv8808/unacquiredsites
+docker pull sedv8808/unacquired_sites_app
 ```
 3. Use the command line to navigate to the root of this project on your computer, and then type the following (filling in *\<Path_on_your_computer\>* with the absolute path to the root of this project on your computer).
+
 ```
-docker run --rm -v <Path_on_your_computer>:/UnacquiredSites  sedv8808/unacquiredsites make -C '/UnacquiredSites' all
+docker run -v /Your/full/path/UnacquiredSites/output/predictions/:/app/input -v /Your/full/path/UnacquiredSites/output/from_dashboard/:/app/output/from_dashboard -p 8050:8050 sedv8808/unacquired_sites_app:latest
 ```
 
-4. To clean up the analysis type:
-```
-docker run --rm -v <Path_on_your_computer>:/UnacquiredSites  sedv8808/unacquiredsites make -C '/UnacqiredSites' clean
-```
+4. Navigate through the different articles and mark the sentences that have coordinates.
 
-##### Without Docker
+5. Sentences will be saved in the output/from_dashboard folder. Please send your outputs to us.
+
+##### Without Docker and to review Modelling or other scripts.
 
 This repository consists of 3 Python scripts.
 <br>

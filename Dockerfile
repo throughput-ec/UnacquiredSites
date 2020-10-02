@@ -26,21 +26,24 @@ RUN pip3 install dash_html_components
 RUN pip3 install dash_core_components
 RUN pip3 install dash_table
 RUN pip3 install dash
+RUN pip3 install dash_extensions
 
 COPY src/modules /app
 RUN ls -alp /app
 
-COPY output/predictions /app/input
+COPY output/predictions/ /app/input
+COPY output/from_dashboard/ /app/output
 
 WORKDIR /app
 COPY . /app
 
-CMD ["python3", "/app/dashboard/record_mining_dashboard.py"]
+CMD ["python3", "/app/dashboard/record_mining_dashboard.py", "--input_path=/app/output/predictions", "--output_path=/app/output/from_dashboard"]
 
-COPY output/from_dashboard /app/output
+# how to build the docker image
+# docker build . -t unacquired_sites_app
 
-# how to build docker image
-# docker build . -t my_third_xdd_app
+# how to run image locally
+# docker run -v /Your/full/path/UnacquiredSites/output/predictions/:/app/input -v /Your/full/path/UnacquiredSites/output/from_dashboard/:/app/output/from_dashboard -p 8050:8050 unacquired_sites_app:latest
 
-# how to run image
-# docker run -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output/predictions:/app/input -p 8050:8050 my_third_xdd_app:latest
+# Example
+# docker run -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output/predictions/:/app/input -v /Users/seiryu8808/Desktop/UWinsc/Github/UnacquiredSites/output/from_dashboard/:/app/output/from_dashboard -p 8050:8050 unacquired_sites_app:latest
