@@ -15,6 +15,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
+nltk.download('punkt')
 
 import time
 import pickle
@@ -25,6 +26,9 @@ import os
 
 import cProfile, pstats, io
 
+import warnings
+warnings.filterwarnings("ignore")
+
 ## USAGE
 ## python3 src/modules/modelling/predict.py \
 ## --input_name = 'data/sentences_nlp3522' \
@@ -33,7 +37,10 @@ import cProfile, pstats, io
 
 file = r'data/sentences_nlp3522'
 bib_file = r'data/bibjson2'
-out_file_name = r'output/predictions/predicted_labels_new_data.tsv'
+out_file = r'output/predictions/'
+t = time.localtime()
+timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
+out_file_name = r'predicted_labels_new_data_'+timestamp+'.tsv'
 
 def main():
     parser = argparse.ArgumentParser()
@@ -42,7 +49,7 @@ def main():
                         help='Path + Name of the file as tsv.')
     parser.add_argument('--bib_file', type=str, default=bib_file,
                         help='Directory where bibliography json file is.')
-    parser.add_argument('--output_file', type=str, default=out_file_name,
+    parser.add_argument('--output_file', type=str, default=out_file,
                         help='Directory where your output data is.')
 
     args = parser.parse_args()
@@ -68,7 +75,7 @@ def main():
 
     test_pred_comp = test_pred_comp[['sentid','words_as_string', 'link_url', 'guessed_label', 'predicted_proba', '_gddid', 'title']]
 
-    output_file = os.path.join(args.output_file)
+    output_file = os.path.join(args.output_file, out_file_name)
     test_pred_comp.to_csv(output_file, sep='\t', index = False)
     print(f"Saving predictions: {output_file}")
 

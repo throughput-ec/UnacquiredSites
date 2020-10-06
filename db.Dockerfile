@@ -1,5 +1,5 @@
-# Docker file for Unaquired Sites pipeline
-# Socorro Dominguez, July, 2020
+# Docker file for Unaquired Sites dashboard
+# Socorro Dominguez, August, 2020
 
 # use python:3 as the base image
 FROM python:3
@@ -11,10 +11,6 @@ RUN pip3 install pandas
 RUN apt-get update && \
     pip3 install matplotlib && \
     rm -rf /var/lib/apt/lists/*
-
-RUN pip3 install scikit-learn
-
-RUN pip3 install nltk
 
 RUN pip3 install argparse
 
@@ -40,7 +36,7 @@ COPY . /app
 CMD ["python3", "/app/dashboard/record_mining_dashboard.py", "--input_path=/app/output/predictions", "--output_path=/app/output/from_dashboard"]
 
 # how to build the docker image
-# docker build . -t unacquired_sites_app
+# docker build . -f db.Dockerfile -t unacquired_sites_app
 
 # how to run image locally
 # docker run -v /Your/full/path/UnacquiredSites/output/predictions/:/app/input -v /Your/full/path/UnacquiredSites/output/from_dashboard/:/app/output/from_dashboard -p 8050:8050 unacquired_sites_app:latest
