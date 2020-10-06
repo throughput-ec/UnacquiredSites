@@ -3,7 +3,7 @@
 
 # ML Record Mining
 
-Four-month project to create a pipeline that uses GeoDeepDive's output to find Unaquired Sites for Neotoma.  
+Project to create a pipeline that uses GeoDeepDive's output to find Unaquired Sites for Neotoma.  
 
 Using NLP parsed text and a Data Science approach, identify whether a paper is suitable for Neotoma and detect features such as 'Site Name', 'Location', 'Age Span' and 'Site Descriptions'.  
 
@@ -43,7 +43,8 @@ throughput-ec/UnacquiredSites/
 │   │   ├── dashboard     
 │   │   │   └── record_mining_dashboard.py     # script with dashboard
 │   │   ├── modelling                          # training script
-│   │   │   └── model.py                       # script that creates model and predicts
+│   │   │   ├──  model.py                      # script that creates model and predicts
+│   │   │   └── predict.py                     # script to do predictions on new data
 │   │   └──  preprocessing                     # preprocessing of the data modules
 │   │   │   ├── bibliography_loader.py         # Module to load data properly
 │   │   │   ├── eda_creator.py
@@ -51,25 +52,25 @@ throughput-ec/UnacquiredSites/
 │   │   │   ├── nlp_sentence_loader.py
 │   │   │   ├── utils.py                       # Module with some utility functions
 │   │   └── └── preprocess_all_data.py         # Main script for preprocessing
-│   ├── output                                 # all modules for the package
-│   │   ├── eda     
-│   │   │   └── '*'.tsv                        # Set of 5 tsv files
-│   │   ├── for_model                          
-│   │   │   └── preprocessed_sentences.tsv     # File of preprocessed sentences
-│   │   ├── predictions                        # training script
-│   │   │   ├── comparison_file.tsv            # File with test set of sentences, their predicted label and proba
-│   │   │   └── dashboard_file.tsv             # File with train set of sentences, their trained label and proba
-│   │   └──  profiling                         # preprocessing of the data modules
-│   │   │   ├── profiling_model.txt            # File with detailed profile of model script
-│   │   │   └── profiling_preprocess_data.tsv  # File with detailed profile of preprocess_data script
-│   └── tests                                  # all tests for the modules
+│   ├── tests                                  # all tests for the modules
 │   │   ├── test_data                                       
 │   │   ├── test_bibliography_loader.py                      
 │   │   ├── test_eda_creator.py
 │   │   ├── test_neotoma_loader.py
 │   │   ├── test_nlp_sentence_loader.py
 │   │   ├── test_utils.py                                   
-│   │   └── test_preprocess_all_data.py  
+│   └── └── test_preprocess_all_data.py  
+├── output                                 # all modules for the package
+│   ├── eda     
+│   │   └── '*'.tsv                        # Set of 5 tsv files
+│   ├── for_model                          
+│   │   └── preprocessed_sentences.tsv     # File of preprocessed sentences
+│   ├── predictions                        # training script
+│   │   ├── comparison_file.tsv            # File with test set of sentences, their predicted label and proba
+│   │   └── dashboard_file.tsv             # File with train set of sentences, their trained label and proba
+│   └──  profiling                         # preprocessing of the data modules
+│   │   ├── profiling_model.txt            # File with detailed profile of model script
+│   └── └── profiling_preprocess_data.tsv  # File with detailed profile of preprocess_data script
 ├── .gitignore
 ├── CODE_OF_CONDUCT.md
 ├── Dockerfile
@@ -118,29 +119,59 @@ The current pipeline that is followed is:
 
 
 ### Instructions
-##### Docker
 
-1. Clone/download this repository
-2. Use the command line on your computer to get the [unacquired_sites_app](https://hub.docker.com/r/sedv8808/unacquired_sites_app) image from [DockerHub](https://hub.docker.com/):
+There are currently two main functionalities for this repo.
+The first one is to run a Dashboard that will help us hand label new data in order to improve Record Mining predictions.
+
+If you are helping to hand label, these are the instructions you should follow:
+
+##### Docker Dashboard
+
+1. Clone/download this repository.
+2. Using the command line, go to the root directory of this repository.
+3. Get the [unacquired_sites_app](https://hub.docker.com/r/sedv8808/unacquired_sites_app) image from [DockerHub](https://hub.docker.com/) from the command line:
 ```
 docker pull sedv8808/unacquired_sites_app
 ```
-3. Use the command line to navigate to the root of this project on your computer, and then type the following (filling in *\<Path_on_your_computer\>* with the absolute path to the root of this project on your computer).
+4. Verify you are in the root directory of this project. Type the following (filling in *\<Path_on_your_computer\>* with the absolute path to the root of this project on your computer).
 
 ```
 docker run -v /Your/full/path/UnacquiredSites/output/predictions/:/app/input -v /Your/full/path/UnacquiredSites/output/from_dashboard/:/app/output/from_dashboard -p 8050:8050 sedv8808/unacquired_sites_app:latest
 ```
 
-4. Navigate through the different articles and mark the sentences that have coordinates.
+5. Go to your internet browser and enter the following address:
+    http://0.0.0.0:8050/
 
-5. Sentences will be saved in the output/from_dashboard folder. Please send your outputs to us.
+6. Navigate through the different articles and mark the sentences that have coordinates.
 
-##### Without Docker and to review Modelling or other scripts.
+7. Click the save button once you finish ONE article.
 
-This repository consists of 3 Python scripts.
-<br>
-Use this `Makefile` to generate a model that will help identify if a Sentence has 'coordinates' in it or not.
-<br>
+8. Sentences will be saved in the output/from_dashboard folder. Kindly send those outputs to us.
+
+![img](figures/img/dashboard_recording.mov)
+
+##### Docker ML Predict
+
+If you are trying to get new predictions on never seen corpus, then follow these instructions:
+
+1. Clone/download this repository.
+2. Using the command line, go to the root directory of this repository.
+3. Get the [unacquired_sites_ml_app](https://hub.docker.com/r/sedv8808/unacquired_sites_ml_app) image from [DockerHub](https://hub.docker.com/) from the command line:
+```
+docker pull sedv8808/unacquired_sites_ml_app
+```
+4. Verify you are in the root directory of this project. Type the following (filling in *\<Path_on_your_computer\>* with the absolute path to the root of this project on your computer).
+
+```
+docker run -v /<Path_on_your_computer>/UnacquiredSites/data/sentences_nlp3522:/app/input/sentences -v /<Path_on_your_computer>/UnacquiredSites/data/bibjson2:/app/input/biblio -v /<Path_on_your_computer>/UnacquiredSites/output/predictions/:/app/output/predictions/ unacquired_sites_ml_app:latest
+```
+5. You will get an output file with a timestamp. That file are your predictions. You can load that file into the dashboard to verify if the sentences that seem to have coordinates make sense.
+
+**IMPORTANT:** In order to run this docker file, you need to load in the `data` directory a `bibjson` file and a `sentences_nlp3522` that respect the same format as the dummy files.
+
+##### Without Docker and to review other scripts.
+
+This repository consists of 4 Python scripts.
 
 In order to run this project, you need to:
 1. Clone or download this repository.
@@ -151,31 +182,20 @@ To run the scripts:
 ```
 # From the command line.
 
-# To run all the Python scripts from beginning to the end. Delivers a final report.
-make all
-
-#	Deletes all unnecessary files in case you need to run the project from scratch.
-make clean
-
-```
-The makefile is the short way of running all Python scripts in the following order :
-
-```
 # Load data and Exploratory Data Analysis
 python3 src/modules/preprocessing/preprocess_all_data.py
 
 # Train model or use trained model for inference
 python3 src/modules/modelling/model.py --trained_model='yes'
 
+# Predict on new data
+python3 src/modules/modelling/predict.py
+
 # Summarize and visualize data
 python3 src/modules/dashboard/record_mining_dashboard.py
 
 # To visualize in your browser, enter the following http address.
 http://127.0.0.1:8050/
-
-
-# TODO
-Write reports
 ```
 
 ## Running the dashboard
@@ -189,7 +209,7 @@ Please watch this short video on how to use this tool:
 ##  Profiling
 Detailed profiling logs can be found on:
 ```
-src/output/profiling
+output/profiling
 ```
 
 If you want to repeat a detailed profiling for each script, open `preprocess_all_data.py` and `model.py`.
