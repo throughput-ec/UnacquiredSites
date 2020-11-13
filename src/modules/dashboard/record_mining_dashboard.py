@@ -138,8 +138,8 @@ app.layout = html.Div(children=[html.H1('Record Mining Dashboard'),
                                 html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'}),
 
                                 dcc.Tabs(id='tabs-example', value='tab-1', children=[
-                                                                                     dcc.Tab(label='Graphics', value='tab-1'),
-                                                                                     dcc.Tab(label='Complete article', value='tab-2'),
+                                                                                     dcc.Tab(label='Data Exploration', value='tab-1'),
+                                                                                     dcc.Tab(label='Article', value='tab-2'),
                                                                                      ]),
                                 html.Div(id='tabs-example-content')
                                 ])
@@ -221,7 +221,10 @@ def load_table_t2(input_title):
     data =''
     data= datagen()
     data.reset_index(inplace=True)
-    data = data[data['prediction_proba'] > 0.006]
+    data1 = data[(data['prediction_proba'] > 0.000) & (data['prediction_proba'] < 0.006)]
+    data1 = data.sample(frac = 0.15)
+    data2 = data[data['prediction_proba'] > 0.006]
+    data = pd.concat([data1, data2])
     data=data[data['title'] == input_title]
     data['coordinates(y/n)'] = ''
     data=data[['_gddid','sentid','sentence', 'prediction_proba', 'predicted_label','validated_coordinates', 'found_coordinates']]
@@ -264,7 +267,7 @@ def update_output_t2(json_df_t2):
                           style_cell={'width': '50px',
                                       'height': '30px',
                                       'textAlign': 'left'},
-                          
+
 
                           merge_duplicate_headers=True
                           )

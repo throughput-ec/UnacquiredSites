@@ -6,6 +6,7 @@ import random
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import confusion_matrix
 
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -19,6 +20,7 @@ import sys
 import os
 
 import cProfile, pstats, io
+warnings.filterwarnings("ignore")
 
 ## USAGE
 ## python3 src/modules/modelling/model.py \
@@ -227,6 +229,7 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         print(f"Model's validation accuracy: {result:.5f}")
         y_pred = loaded_model.predict(X_test)
         y_proba = loaded_model.predict_proba(X_test)[:,1]
+        print('conf. matrix', confusion_matrix(y_test, y_pred))
         return y_pred, y_proba
 
     if trained_model == 'no':
@@ -239,6 +242,7 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         print(f"Model's validation accuracy: {result:.5f}")
         y_pred = model.predict(X_test)
         y_proba = model.predict_proba(X_test)[:,1]
+        print('conf. matrix', confusion_matrix(y_test, y_pred))
         return y_pred, y_proba
 
 def predict_proba_train(X_train, y_train, trained_model = 'yes'):
