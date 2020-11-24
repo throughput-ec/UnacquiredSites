@@ -15,6 +15,7 @@ import os
 import cProfile
 import pstats
 import io
+warnings.filterwarnings("ignore")
 
 # USAGE
 # python3 src/preprocess_all_data.py \

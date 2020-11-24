@@ -77,11 +77,15 @@ def main():
 
     data1 = test_pred_comp[(test_pred_comp['predicted_proba'] > 0.000) & (test_pred_comp['predicted_proba'] < 0.006)]
     data1 = data1.sample(frac = 0.15)
-    data2 = test_pred_comp[test_pred_comp['predicted_proba'] > 0.006]
+    data2 = test_pred_comp[test_pred_comp['predicted_proba'] >= 0.006]
     test_pred_comp = pd.concat([data1, data2])
+    test_pred_comp = test_pred_comp[['_gddid', 'sentid', 'title', 'words_as_string', 'link_url', 'guessed_label', 'predicted_proba']]
+
+    test_pred_comp.sort_values(by=['_gddid', 'sentid'], inplace = True)
 
     output_file = os.path.join(args.output_file, out_file_name)
     test_pred_comp.to_csv(output_file, sep='\t', index = False)
+
     print(f"Saving predictions: {output_file}")
 
 def convert_words_to_string(df,
