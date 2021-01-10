@@ -34,7 +34,7 @@ CMD ["python3", "/app/modelling/predict.py", "--input_name=/app/input/sentences"
 # docker build . -f ml.Dockerfile -t unacquired_sites_ml_app
 
 # how to run image locally
-# docker run -v /Users/seiryu8808/Desktop/UWinsc/0_Github/UnacquiredSites/data/sentences_nlp3522:/app/input/sentences -v /Users/seiryu8808/Desktop/UWinsc/0_Github/UnacquiredSites/data/bibjson2:/app/input/biblio -v /Users/seiryu8808/Desktop/UWinsc/0_Github/UnacquiredSites/output/predictions/:/app/output/predictions/ unacquired_sites_ml_app:latest
+# docker run -v /Users/seiryu8808/Desktop/UWinsc/0_Github/UnacquiredSites/data/sentences_nlp352:/app/input/sentences -v /Users/seiryu8808/Desktop/UWinsc/0_Github/UnacquiredSites/data/bibjson:/app/input/biblio -v /Users/seiryu8808/Desktop/UWinsc/0_Github/UnacquiredSites/output/predictions/:/app/output/predictions/ unacquired_sites_ml_app:latest
 
 # troubleshooting useful command
 # docker run -it unacquired_sites_ml_app5:latest bash
