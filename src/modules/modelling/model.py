@@ -3,10 +3,11 @@ import numpy as np
 import random
 
 # Loading libraries for modeling
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, recall_score
 
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -20,12 +21,14 @@ import sys
 import os
 
 import cProfile, pstats, io
-warnings.filterwarnings("ignore")
+#warnings.filterwarnings("ignore")
 
 ## USAGE
 ## python3 src/modules/modelling/model.py \
 ## --input_file = 'output/for_model/preprocessed_sentences.tsv' \
-## --trained_model='yes' --validation_file='output/from_dashboard/last_validated.tsv'
+## --trained_model='yes' --Svalidation_file='output/from_dashboard/last_validated.tsv'
+
+#python3 src/modules/modelling/model.py --input_file='output/for_model/preprocessed_sentences.tsv' --trained_model='no'
 
 in_file_name = r'output/for_model/preprocessed_sentences.tsv'
 
@@ -80,7 +83,7 @@ def main():
     predicted_proba = pd.DataFrame(y_proba)
     actual_label = actual_label.reset_index()
 
-    original_sentence = pd.DataFrame(data_test[['_gddid', 'title', 'sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
+    original_sentence = pd.DataFrame(data_test[['gddid', 'title', 'sentid','sentence', 'found_lat', 'latnorth', 'found_long', 'longeast']])
     original_sentence = original_sentence.reset_index()
 
     test_pred_comp = guessed_label.join(actual_label)
@@ -93,7 +96,7 @@ def main():
 
     test_pred_comp = test_pred_comp.join(original_sentence)
     test_pred_comp = test_pred_comp.drop(columns=['index'])
-    test_pred_comp = test_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label', 'words_as_string':'sentence'})
+    test_pred_comp = test_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label'})
     #test_pred_comp.columns = ['predicted_proba'] + test_pred_comp.columns.tolist()[1:]
     test_pred_comp['train/test'] = 'Test'
     output_file = os.path.join(args.output_file)
@@ -106,7 +109,7 @@ def main():
     predicted_train_proba = pd.DataFrame(y_train_proba)
     actual_train_label = actual_train_label.reset_index()
 
-    original_train_sentence = pd.DataFrame(data_train[['_gddid', 'title', 'sentid','words_as_string', 'found_lat', 'latnorth', 'found_long', 'longeast', 'found_sites']])
+    original_train_sentence = pd.DataFrame(data_train[['gddid', 'title', 'sentid','sentence', 'found_lat', 'latnorth', 'found_long', 'longeast']])
     original_train_sentence = original_train_sentence.reset_index()
 
     train_pred_comp = guessed_train_label.join(actual_train_label)
@@ -119,8 +122,7 @@ def main():
 
     train_pred_comp = train_pred_comp.join(original_train_sentence)
     train_pred_comp = train_pred_comp.drop(columns=['index'])
-    train_pred_comp = train_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label', 'words_as_string':'sentence'})
-    #test_pred_comp.columns = ['predicted_proba'] + test_pred_comp.columns.tolist()[1:]
+    train_pred_comp = train_pred_comp.rename(columns={'0':'predicted_proba', 'has_both_lat_long_int':'original_label'})
     train_pred_comp['train/test'] = 'Train'
     output_file2 = os.path.join(out_dashboard_file_name)
     train_pred_comp.to_csv(output_file2, sep='\t', index = False)
@@ -152,9 +154,9 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
     else:
         data = pd.read_csv(input_file, sep='\t')
         validated_data = pd.read_csv(validation_file, sep='\t')
-        validated_data=validated_data[['_gddid', 'sentid', 'validated_coordinates', 'timestamp']]
+        validated_data=validated_data[['gddid', 'sentid', 'validated_coordinates', 'timestamp']]
         validated_data['validated_coordinates']=validated_data['validated_coordinates'].astype(int)
-        df=pd.merge(data, validated_data,  how='left', left_on=['_gddid','sentid'], right_on = ['_gddid','sentid'])
+        df=pd.merge(data, validated_data,  how='left', left_on=['gddid','sentid'], right_on = ['gddid','sentid'])
         print("Used file with validated coordinates")
 
 
@@ -178,16 +180,15 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
 
     # Translate words to vectors
     # NLP model
-    vec = CountVectorizer(min_df=2,
-                          tokenizer=nltk.word_tokenize)
+    vec = CountVectorizer(min_df=2)
 
     # Fit and transform training
     if validation_file==r'':
-        X_train = vec.fit_transform(data_train['words_as_string'].fillna(' '))
+        X_train = vec.fit_transform(data_train['nltk'].fillna(' '))
         y_train = data_train['has_both_lat_long_int']
 
         # Transform test data without fitting
-        X_test = vec.transform(data_test['words_as_string'].fillna(' '))
+        X_test = vec.transform(data_test['nltk'].fillna(' '))
         y_test = data_test['has_both_lat_long_int']
 
         filename = 'output/count_vec_model.sav'
@@ -196,14 +197,14 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
         return X_train, y_train, X_test, y_test, data_test, data_train
 
     else:
-        X_train = vec.fit_transform(data_train['words_as_string'].fillna(' '))
+        X_train = vec.fit_transform(data_train['nltk'].fillna(' '))
         y_train = data_train['validated_coordinates']
 
         filename = 'output/count_vec_model.sav'
         pickle.dump(vec, open(filename, 'wb'))
 
         # Transform test data without fitting
-        X_test = vec.transform(data_test['words_as_string'].fillna(' '))
+        X_test = vec.transform(data_test['nltk'].fillna(' '))
         y_test = data_test['validated_coordinates']
 
         return X_train, y_train, X_test, y_test, data_test, data_train
@@ -213,7 +214,8 @@ def prepare_data(file = in_file_name, validation_file = validation_file):
 
 
 def train(X_train, y_train):
-    clf = DecisionTreeClassifier(min_samples_split = 40, max_depth = 12)
+    clf = MultinomialNB()
+    #clf = DecisionTreeClassifier(min_samples_split = 40, max_depth = 12)
     clf.fit(X_train, y_train)
     filename = 'output/finalized_model.sav'
     pickle.dump(clf, open(filename, 'wb'))
@@ -230,6 +232,7 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         y_pred = loaded_model.predict(X_test)
         y_proba = loaded_model.predict_proba(X_test)[:,1]
         print('conf. matrix', confusion_matrix(y_test, y_pred))
+        print('recall:', recall_score(y_test, y_pred))
         return y_pred, y_proba
 
     if trained_model == 'no':
@@ -241,8 +244,13 @@ def predict(X_test, y_test, X_train, y_train, trained_model = 'yes'):
         result = model.score(X_test, y_test)
         print(f"Model's validation accuracy: {result:.5f}")
         y_pred = model.predict(X_test)
+        y_pred_train = model.predict(X_train)
         y_proba = model.predict_proba(X_test)[:,1]
         print('conf. matrix', confusion_matrix(y_test, y_pred))
+        print('recall:', recall_score(y_test, y_pred))
+
+        print('NB-conf. matrix-from trained', confusion_matrix(y_train, y_pred_train))
+        print('NB-recall-from trained:', recall_score(y_train, y_pred_train))
         return y_pred, y_proba
 
 def predict_proba_train(X_train, y_train, trained_model = 'yes'):
