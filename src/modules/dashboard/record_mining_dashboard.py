@@ -132,8 +132,8 @@ app.config['suppress_callback_exceptions'] = True
 app.layout = html.Div(children=[html.H1('Record Mining Dashboard'),
                                 html.Div(children=[html.P('Choose a paper:'),
                                                    dcc.Dropdown(id="title_dropdown",
-                                                                options=options_list,
-                                                                value='Paradigms and proboscideans in the southern Great Lakes region, USA'),
+                                                                options=options_list)#,
+                                                                #value='Paradigms and proboscideans in the southern Great Lakes region, USA'),
                                                     ]),
                                 html.Div(id='gddid_output', style={'whiteSpace': 'pre-line'}),
 
