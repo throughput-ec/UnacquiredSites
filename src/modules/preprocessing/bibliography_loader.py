@@ -22,16 +22,16 @@ def preprocessed_bibliography(path):
     [elem.update({'identifier':[{'_type':None,'_id':None}]}) for elem in bib_dict if 'identifier' not in elem.keys()]
 
     # TODO Load into SQL server and connect through SQL
-    bibliography = pd.io.json.json_normalize(bib_dict,
-                                             'identifier',
-                                             ['publisher', 'title',
-                                              ['journal', 'name', 'name'],
-                                              ['author'],
-                                              'year', 'number', 'volume',
-                                              ['link'],
-                                              '_gddid', 'type', 'pages'],
-                                             record_prefix='_',
-                                             errors='ignore')
+    bibliography = pd.json_normalize(bib_dict,
+                                'identifier',
+                                ['publisher', 'title',
+                                ['journal', 'name', 'name'],
+                                ['author'],
+                                'year', 'number', 'volume',
+                                ['link'],
+                                '_gddid', 'type', 'pages'],
+                                record_prefix='_',
+                                errors='ignore')
 
     bibliography['link'] = bibliography['link'].astype(str)
 
@@ -62,6 +62,6 @@ def preprocessed_bibliography(path):
                                  '_gddid', 'type', 'pages',
                                  'link_url', 'link_type']]
 
-    bibliography = bibliography.rename(columns={'_id': 'doi'})
+    bibliography = bibliography.rename(columns={'_id': 'doi', '_gddid':'gddid'})
 
     return bibliography

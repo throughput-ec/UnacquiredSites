@@ -18,10 +18,10 @@ def neotoma_loader(file):
         pd.DataFrame with all Neotoma information
     """
     neotoma = pd.read_csv(file)
-    neotoma = neotoma[['siteid', 'sitename',
+    neotoma = neotoma[['doi', 'siteid', 'sitename',
                        'longitudeeast', 'latitudenorth',
                        'longitudewest', 'latitudesouth',
-                       'sitedescription', 'doi']]
+                       'sitedescription']]
     return neotoma
 
 

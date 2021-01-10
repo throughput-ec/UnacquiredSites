@@ -1,36 +1,6 @@
-
-
-# Functions to add regex degrees
-def convert_words_to_string(df,
-                            col_to_convert='col',
-                            new_col_name='words_as_string'):
-    """
-    Converts list of strings into a single string
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input data frame
-    col_to_convert : df column
-        Column that contains list of strings
-    new_col_name : df column
-        Name of the new column
-
-    Returns
-    -------
-    pd.DataFrame with new column
-    This new column contains the list of strings converted to just one string.
-    """
-
-    df[new_col_name] = df[col_to_convert]\
-        .apply(lambda x: ','.join(map(str, x)))
-
-    return df
-
 # Add columns to dataframe for the dms and dd REGEX
 
-
-def find_re(df,
+def find_regex(df,
             find_val='dms_regex',
             search_col='col',
             new_col_name='dms_regex'):
