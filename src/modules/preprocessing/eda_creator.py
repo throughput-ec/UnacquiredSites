@@ -1,7 +1,7 @@
 import utils as ard
 import os
 
-def not_in_neotoma(df, df2, path = r'src/output/eda'):
+def not_in_neotoma(df, df2, path = r'output/eda'):
     """Obtain all the article DOI's that are not in the Neotoma Database
 
     Parameters
@@ -19,18 +19,18 @@ def not_in_neotoma(df, df2, path = r'src/output/eda'):
 
     """
     arts_not_in_neotoma = df[df['longeast'].isnull()]
-    arts_not_in_neotoma = arts_not_in_neotoma.groupby('_gddid')\
+    arts_not_in_neotoma = arts_not_in_neotoma.groupby('gddid')\
                                              .agg({'longeast':'sum'})
 
-    arts_not_in_neotoma = arts_not_in_neotoma.merge(df2, on ='_gddid')
-    arts_not_in_neotoma = arts_not_in_neotoma[['_gddid', 'title', 'year', 'doi', 'link_url']]
+    arts_not_in_neotoma = arts_not_in_neotoma.merge(df2, on ='gddid')
+    arts_not_in_neotoma = arts_not_in_neotoma[['gddid', 'title', 'year', 'doi', 'link_url']]
 
     output_file = os.path.join(path,'articles_wo_neotoma_coordinates.tsv')
     arts_not_in_neotoma.to_csv(output_file, sep='\t', index = False)
     print("A TSV file with articles not found in Neotoma was created on your EDA output folder.")
     return arts_not_in_neotoma
 
-def sentences_w_coords_int(df_with_int, path = r'src/output/eda'):
+def sentences_w_coords_int(df_with_int, path = r'output/eda'):
     """Obtain all the intersections between sentences in NLP df and Neotoma DB
 
     Parameters
@@ -47,14 +47,14 @@ def sentences_w_coords_int(df_with_int, path = r'src/output/eda'):
 
     """
     # Output of sentences with lat and long intersections
-    sent_with_int_df = df_with_int[['_gddid','words', 'year', 'latnorth', 'found_lat', 'longeast', 'found_long', 'dms_regex',  'dd_regex']]
+    sent_with_int_df = df_with_int[['gddid','nltk', 'year', 'latnorth', 'found_lat', 'longeast', 'found_long']]
     sent_with_int_df = sent_with_int_df.rename(columns={"latnorth":"expected_lat", 'longeast':'expected_long'})
     output_file = os.path.join(path,'sentences_with_latlong_intersections.tsv')
     sent_with_int_df.to_csv(output_file, sep='\t', index = False)
     print("A TSV file with sentences that have coordinates was created in your EDA output folder.")
     return sent_with_int_df
 
-def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'src/output/eda'):
+def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'output/eda'):
     """Obtain all article that have no coordinate intersections
 
     Parameters
@@ -74,7 +74,7 @@ def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = 
     csv file in the output path with the mentioned DataFrame
 
     """
-    no_inter_df = nlp_bib_neotoma.groupby('_gddid')\
+    no_inter_df = nlp_bib_neotoma.groupby('gddid')\
                     .agg({'found_lat':'sum', 'found_long':'sum'})\
                     .reset_index()
 
@@ -84,7 +84,7 @@ def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = 
     no_inter_df = no_inter_df.merge(bibliography)
     no_inter_df = no_inter_df.merge(neotoma_joined_df, how = 'left', left_on = 'doi', right_on = 'doi')\
                              .rename(columns={"latnorth": "expected_lat", "longeast": "expected_long"})
-    no_inter_df = no_inter_df[['_gddid', 'title', 'year','found_lat', 'expected_lat', 'found_long', 'expected_long', 'doi', 'link_url',]]
+    no_inter_df = no_inter_df[['gddid', 'title', 'year','found_lat', 'expected_lat', 'found_long', 'expected_long', 'doi', 'link_url',]]
     output_file = os.path.join(path,'articles_wo_latlong_intersections.tsv')
     no_inter_df.to_csv(output_file, sep='\t', index = False)
     print("A TSV file of articles that have no coordinates was created in your EDA output folder.")
@@ -92,7 +92,7 @@ def articles_wo_coords(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = 
 
 
 
-def sentences_w_site_int(nlp_bib_neotoma, path = r'src/output/eda'):
+def sentences_w_site_int(nlp_bib_neotoma, path = r'output/eda'):
     """Obtain all article that have no coordinate intersections
 
     Parameters
@@ -108,18 +108,18 @@ def sentences_w_site_int(nlp_bib_neotoma, path = r'src/output/eda'):
     csv file in the output path with the mentioned DataFrame
 
     """
-    sn_inter = ard.find_intersections(nlp_bib_neotoma, cols_to_intersect = ['words_l','sitenames_l'], new_col_name = 'found_sitenames')
+    sn_inter = ard.find_intersections(nlp_bib_neotoma, cols_to_intersect = ['nltk','sitenames_l'], new_col_name = 'found_sitenames')
 
     sn_inter = sn_inter[sn_inter['found_sitenames'].str.len() != 0]
 
-    sn_inter = sn_inter[['_gddid', 'sentid', 'words_l', 'sitenames_l', 'found_sitenames', 'year']]
+    sn_inter = sn_inter[['gddid', 'sentid', 'nltk', 'sitenames_l', 'found_sitenames', 'year']]
     sn_inter = sn_inter.rename(columns={'sitenames_l':'expected_sitename','found_sitenames':'intersected_sitename'})
     output_file = os.path.join(path,'sentences_with_sitenames_intersections.tsv')
     sn_inter.to_csv(output_file, sep='\t', index = False)
     print("A TSV file of sentences with Site intersections was created in your EDA output folder.")
     return sn_inter
 
-def articles_wo_sites(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'src/output/eda'):
+def articles_wo_sites(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r'output/eda'):
     """Obtain all article that have no sitenames intersections
 
     Parameters
@@ -139,7 +139,7 @@ def articles_wo_sites(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r
     csv file in the output path with the mentioned DataFrame
 
     """
-    arts_wo_sites = nlp_bib_neotoma.groupby('_gddid')\
+    arts_wo_sites = nlp_bib_neotoma.groupby('gddid')\
                                                        .agg({'found_sitenames':'sum'})\
                                                        .reset_index()
 
@@ -148,7 +148,7 @@ def articles_wo_sites(nlp_bib_neotoma, bibliography, neotoma_joined_df, path = r
     arts_wo_sites = arts_wo_sites.merge(bibliography, how = 'inner')\
                                  .merge(neotoma_joined_df, left_on = 'doi', right_on = 'doi')
 
-    arts_wo_sites = arts_wo_sites[['_gddid', 'title', 'year','found_sitenames', 'sitenames', 'doi', 'link_url']]
+    arts_wo_sites = arts_wo_sites[['gddid', 'title', 'year','found_sitenames', 'sitenames', 'doi', 'link_url']]
     arts_wo_sites = arts_wo_sites.rename(columns = {'sitenames': 'exptected_sitename'})
 
     # Output file

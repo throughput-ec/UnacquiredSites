@@ -14,17 +14,17 @@ import io
 
 '''
 USAGE
-python3 src/preprocess_all_data.py \
---output_name='output/for_model/preprocessed_sentences.tsv' \
+python3 src/modules/preprocessing/preprocess_all_data.py \
+--output_name='output/preprocessed_data/preprocessed_sentences.tsv' \
 --bib_file='data/bibjson' \
 --neotoma_file='data/data-1590729612420.csv' \
 --create_eda='yes'
 '''
 
-file = r'output/for_model/preprocessed_sentences.tsv'
+file = r'output/preprocessed_data/preprocessed_sentences.tsv'
 nlp_file=r'data/sentences_nlp352'
 bib_file = r'data/bibjson'
-neotoma_file = r'data/data-1590729612420.csv'
+neotoma_file = r'data/neotoma.csv'
 tsv_or_sql = 'tsv'
 
 def main():
@@ -96,8 +96,6 @@ def main():
 
     if args.create_eda == 'no':
         print("No EDA files was created.")
-
-
 
 def get_all_datasets(nlp_path=nlp_file, bib_path=bib_file, neotoma_path=neotoma_file, tsv_or_sql='tsv'):
     """
