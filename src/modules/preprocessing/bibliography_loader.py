@@ -21,7 +21,6 @@ def preprocessed_bibliography(path):
     # Normalizing data so that we have access to the 'identifier'
     [elem.update({'identifier':[{'_type':None,'_id':None}]}) for elem in bib_dict if 'identifier' not in elem.keys()]
 
-    # TODO Load into SQL server and connect through SQL
     bibliography = pd.json_normalize(bib_dict,
                                 'identifier',
                                 ['publisher', 'title',
