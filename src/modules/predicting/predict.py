@@ -5,17 +5,16 @@ import pstats
 import io
 import pandas as pd
 import json
-#import utils as ard
-#import bibliography_loader as bl
+import utils as utils
+from nltk.stem.snowball import SnowballStemmer
+from nltk.corpus import stopwords
 
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
-nltk.download('punkt')
+#nltk.download('punkt')
 
 import time
 import pickle
@@ -40,7 +39,7 @@ bib_file = r'data/bibjson2'
 out_file = r'output/predictions/'
 t = time.localtime()
 timestamp = time.strftime('%b_%d_%Y_%H%M%S', t)
-out_file_name = r'predicted_labels_new_data_'+timestamp+'.tsv'
+out_file_name = r'predictions_new_data_'+timestamp+'.tsv'
 
 def main():
     parser = argparse.ArgumentParser()
@@ -55,66 +54,41 @@ def main():
     args = parser.parse_args()
 
     nlp_sentences = preprocessed_sentences_tsv(args.input_name)
-    bibliography = bibliography_loader(args.bib_file)
-    nlp_bib = nlp_sentences.merge(bibliography, on='_gddid')
-    original_sentences = nlp_bib[['_gddid', 'title', 'sentid','words_as_string', 'link_url']]
-
+    bibliography = preprocessed_bibliography(args.bib_file)
+    nlp_bib = nlp_sentences.merge(bibliography, on='gddid')
+    original_sentences = nlp_bib[['gddid', 'title', 'sentid','sentence']]
     y_pred, y_proba = predict(data_test = nlp_bib)
 
-    guessed_label = pd.DataFrame(y_pred)
-
-    predicted_proba = pd.DataFrame(y_proba)
-
+    predicted_label = pd.DataFrame(y_pred)
+    prediction_proba = pd.DataFrame(y_proba)
     original_sentences = original_sentences.reset_index()
 
-    test_pred_comp = pd.merge(guessed_label, predicted_proba, left_index=True, right_index=True)
+    prediction_comp = pd.merge(predicted_label, prediction_proba, left_index=True, right_index=True)
+    prediction_comp = pd.merge(original_sentences, prediction_comp, left_index=True, right_index=True)
+    prediction_comp = prediction_comp.reset_index(drop=True)
+    prediction_comp = prediction_comp.rename(columns={'0_x':'predicted_label', '0_y':'prediction_proba'})
+    prediction_comp = prediction_comp[['sentid','sentence', 'predicted_label', 'prediction_proba', 'gddid', 'title']]
 
-    test_pred_comp = pd.merge(original_sentences, test_pred_comp, left_index=True, right_index=True)
-    test_pred_comp = test_pred_comp.reset_index(drop=True)
-    test_pred_comp = test_pred_comp.rename(columns={'0_x':'guessed_label', '0_y':'predicted_proba'})
+    selection1 = prediction_comp[(prediction_comp['prediction_proba'] > 0.000) & (prediction_comp['prediction_proba'] < 0.1)]
+    selection1 = selection1.sample(frac = 0.15)
+    selection2 = prediction_comp[prediction_comp['prediction_proba'] >= 0.1]
+    prediction_comp = pd.concat([selection1, selection2])
+    prediction_comp['true_label']='unknown'
+    prediction_comp['found_lat']='unknown'
+    prediction_comp['latnorth']='unknown'
+    prediction_comp['found_long']='unknown'
+    prediction_comp['longeast'] = 'unknown'
+    prediction_comp['Train/Pred']='Pred'
 
-    test_pred_comp = test_pred_comp[['sentid','words_as_string', 'link_url', 'guessed_label', 'predicted_proba', '_gddid', 'title']]
-
-    data1 = test_pred_comp[(test_pred_comp['predicted_proba'] > 0.000) & (test_pred_comp['predicted_proba'] < 0.006)]
-    data1 = data1.sample(frac = 0.15)
-    data2 = test_pred_comp[test_pred_comp['predicted_proba'] >= 0.006]
-    test_pred_comp = pd.concat([data1, data2])
-    test_pred_comp = test_pred_comp[['_gddid', 'sentid', 'title', 'words_as_string', 'link_url', 'guessed_label', 'predicted_proba']]
-
-    test_pred_comp.sort_values(by=['_gddid', 'sentid'], inplace = True)
+    prediction_comp = prediction_comp[['gddid', 'title', 'sentid', 'sentence', 'predicted_label', 'prediction_proba', 'true_label', 'found_lat', 'latnorth', 'found_long', 'longeast', 'Train/Pred']]
+    prediction_comp.sort_values(by=['gddid', 'sentid'], inplace = True)
 
     output_file = os.path.join(args.output_file, out_file_name)
-    test_pred_comp.to_csv(output_file, sep='\t', index = False)
+    prediction_comp.to_csv(output_file, sep='\t', index = False)
 
     print(f"Saving predictions: {output_file}")
 
-def convert_words_to_string(df,
-                            col_to_convert='col',
-                            new_col_name='words_as_string'):
-    """
-    Converts list of strings into a single string
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input data frame
-    col_to_convert : df column
-        Column that contains list of strings
-    new_col_name : df column
-        Name of the new column
-
-    Returns
-    -------
-    pd.DataFrame with new column
-    This new column contains the list of strings converted to just one string.
-    """
-
-    df[new_col_name] = df[col_to_convert]\
-        .apply(lambda x: ','.join(map(str, x)))
-
-    return df
-
-def bibliography_loader(path):
+def preprocessed_bibliography(path):
     """
     Loads and formats bibliography json file and converts to a dataframe
 
@@ -133,17 +107,16 @@ def bibliography_loader(path):
     # Normalizing data so that we have access to the 'identifier'
     [elem.update({'identifier':[{'_type':None,'_id':None}]}) for elem in bib_dict if 'identifier' not in elem.keys()]
 
-    # TODO Load into SQL server and connect through SQL
-    bibliography = pd.io.json.json_normalize(bib_dict,
-                                             'identifier',
-                                             ['publisher', 'title',
-                                              ['journal', 'name', 'name'],
-                                              ['author'],
-                                              'year', 'number', 'volume',
-                                              ['link'],
-                                              '_gddid', 'type', 'pages'],
-                                             record_prefix='_',
-                                             errors='ignore')
+    bibliography = pd.json_normalize(bib_dict,
+                                'identifier',
+                                ['publisher', 'title',
+                                ['journal', 'name', 'name'],
+                                ['author'],
+                                'year', 'number', 'volume',
+                                ['link'],
+                                '_gddid', 'type', 'pages'],
+                                record_prefix='_',
+                                errors='ignore')
 
     bibliography['link'] = bibliography['link'].astype(str)
 
@@ -167,20 +140,20 @@ def bibliography_loader(path):
         .replace("'},", ";", regex=True)\
         .replace("'}]", "", regex=True)
 
-    bibliography = bibliography[['_id', 'publisher', 'title',
-                                 'author', 'year', 'number',
-                                 'volume', '_gddid', 'type',
-                                 'pages', 'link_url']]
+    bibliography = bibliography[['_type', '_id', 'publisher', 'title',
+                                 'journal.name.name',
+                                 'author',
+                                 'year', 'number', 'volume',
+                                 '_gddid', 'type', 'pages',
+                                 'link_url', 'link_type']]
 
-    bibliography = bibliography.rename(columns={'_id': 'doi'})
+    bibliography = bibliography.rename(columns={'_id': 'doi', '_gddid':'gddid'})
 
     return bibliography
 
 def preprocessed_sentences_tsv(path = file):
-    header_list = ["_gddid", "sentid", "wordidx", "words", "part_of_speech", "special_class",
-               "lemmas", "word_type", "word_modified"]
-    nlp_sentences = pd.read_csv(path, sep='\t', names = header_list)
-    nlp_sentences = nlp_sentences[['_gddid', 'sentid', 'words']]
+    nlp_sentences = pd.read_csv(path, sep='\t', names = ['gddid', 'sentid', 'wordidx', 'words', 'part_of_speech', 'special_class',
+               'lemmas', 'word_type', 'word_modified'], usecols = ['gddid', 'sentid', 'words'])
     nlp_sentences = nlp_sentences.replace('"', '', regex = True)\
                                  .replace('\{', '', regex = True)\
                                  .replace('}', '', regex = True)\
@@ -196,14 +169,34 @@ def preprocessed_sentences_tsv(path = file):
                                  .replace('-RRB', r')', regex=True)
     nlp_sentences['words']= nlp_sentences['words'].str.split(",")
     # Sentences - not words.
-    nlp_sentences = convert_words_to_string(nlp_sentences, col_to_convert = 'words', new_col_name = 'words_as_string')
+    nlp_sentences['sentence'] = nlp_sentences['words'].apply(lambda x: ','.join(map(str, x)))
+
+    # REGEX Values
+    nlp_sentences = utils.find_regex(nlp_sentences, find_val = 'dms_regex',\
+                                search_col = 'sentence', new_col_name = 'dms_re')
+    nlp_sentences = utils.find_regex(nlp_sentences, find_val = 'dd_regex',\
+                                search_col = 'sentence', new_col_name = 'dd_re')
+    nlp_sentences = utils.find_regex(nlp_sentences, find_val = 'digits_regex',\
+                                search_col = 'sentence', new_col_name = 'digits_re')
+
+    # NLP Taks
+    stop = stopwords.words('english')
+    tokenizer = nltk.RegexpTokenizer(r"\w+")
+    stemmer = SnowballStemmer("english")
+
+    nlp_sentences['nltk'] = nlp_sentences.apply(lambda row: tokenizer.tokenize(row['sentence']), axis=1)
+    nlp_sentences['nltk']=nlp_sentences['nltk'].apply(lambda x: [item for item in x if item not in stop])
+    nlp_sentences['nltk']=nlp_sentences['nltk'].apply(lambda x: [stemmer.stem(y) for y in x])
+    nlp_sentences = nlp_sentences[['gddid', 'sentid', 'sentence', 'nltk', 'dms_re', 'dd_re', 'digits_re']]
+
     return nlp_sentences
 
 
 def predict(data_test):
     vec = pickle.load(open('output/count_vec_model.sav', 'rb'))
-    X_test = vec.transform(data_test['words_as_string'].fillna(' '))
-    loaded_model = pickle.load(open('output/finalized_model.sav', 'rb'))
+    X_test = vec.transform(data_test['sentence'].fillna(' '))
+
+    loaded_model = pickle.load(open('output/NB_model.sav', 'rb'))
     y_pred = loaded_model.predict(X_test)
     y_proba = loaded_model.predict_proba(X_test)[:,1]
     return y_pred, y_proba

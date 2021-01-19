@@ -23,7 +23,7 @@ python3 src/modules/modelling/model.py \
 '''
 
 in_file_name = r'output/preprocessed_data/preprocessed_sentences.tsv'
-out_file = r'output/predictions/predictions.tsv'
+out_file = r'output/predictions/predictions_train.tsv'
 eda_file = r'output/eda/probabilities_percentiles_df.tsv'
 
 def main():
@@ -71,6 +71,7 @@ def main():
     prediction_comp = prediction_comp.rename(columns={'0':'predicted_proba'})
 
     prediction_comp['Train/Pred'] = 'Train'
+    prediction_comp = prediction_comp[['gddid', 'title', 'sentid', 'sentence', 'predicted_label', 'prediction_proba', 'true_label', 'found_lat', 'latnorth', 'found_long', 'longeast', 'Train/Pred']]
     output_file = os.path.join(args.output_file)
     prediction_comp.to_csv(output_file, sep='\t', index = False)
     print(f"Saving validation - prediction comparison dataframe in: {output_file}")
