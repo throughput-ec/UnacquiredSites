@@ -1,15 +1,10 @@
 import pandas as pd
 import numpy as np
-import random
 
 # Loading libraries for modeling
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import confusion_matrix, recall_score
-
-import nltk
-from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
 
 import time
 import pickle
@@ -142,19 +137,21 @@ def predictions(X_train, y_train, eda = 'yes'):
 
     return y_pred, y_proba
 
-# Uncomment for profiling
-#pr = cProfile.Profile()
-#pr.enable()
+# Remove docstring for profiling
+'''
+pr = cProfile.Profile()
+pr.enable()
 
-#my_result = main()
+my_result = main()
 
-#pr.disable()
-#s = io.StringIO()
-#ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
-#ps.print_stats()
+pr.disable()
+s = io.StringIO()
+ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+ps.print_stats()
 
-#with open('output/profiling/profiling_model.txt', 'w+') as f:
-#    f.write(s.getvalue())
+with open('output/profiling/profiling_model.txt', 'w+') as f:
+    f.write(s.getvalue())
+'''
 
 if __name__ == '__main__':
     main()
