@@ -15,10 +15,11 @@ RUN apt-get update && \
 RUN pip3 install scikit-learn
 
 RUN pip3 install nltk
+
 #RUN pip3 install warnings
 
 RUN pip3 install argparse
-
+RUN python -m nltk.downloader punkt
 COPY src/modules /app
 RUN ls -alp /app
 
