@@ -1,6 +1,0 @@
-NB-conf. matrix-from trained: 
-
- [[105143   1281]
- [   109    107]]
-NB-recall-from trained: 0.49537037037037035
-Check milestones for metrics in test set
