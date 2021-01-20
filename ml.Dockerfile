@@ -40,4 +40,4 @@ CMD ["python3", "/app/predicting/predict.py", "--input_name=/app/input/sentences
 # docker run -it sedv8808/unacquired_sites_ml_app:latest bash
 
 # pushing the image to the hub
-#
+# docker push sedv8808/unacquired_sites_ml_app:latest
