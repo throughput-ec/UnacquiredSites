@@ -6,15 +6,16 @@ import io
 import pandas as pd
 import json
 import utils as utils
-from nltk.stem.snowball import SnowballStemmer
-from nltk.corpus import stopwords
+
 
 from sklearn.feature_extraction.text import CountVectorizer
 
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
+#nltk.download('stopwords')
 from nltk.corpus import stopwords
-#nltk.download('punkt')
+from nltk.stem.snowball import SnowballStemmer
+#nltk.download('punkt') # for Docker - comment when not building Docker
 
 import time
 import pickle
